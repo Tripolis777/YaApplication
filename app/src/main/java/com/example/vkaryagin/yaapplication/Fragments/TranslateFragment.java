@@ -13,7 +13,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 
 import com.example.vkaryagin.yaapplication.Core.Language;
 import com.example.vkaryagin.yaapplication.Core.Translator;
@@ -28,16 +27,18 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
 
 import javax.net.ssl.HttpsURLConnection;
 
 /**
  * Created by tripo on 3/19/2017.
  */
+
+//TODO: Вывод перевода
+//TODO: Автовыбор языка приложения (системы?) для вводы переводимого текста
+//TODO: Английский - как дефолтный язык перевода
+//TODO: Refactoring
 
 public class TranslateFragment extends Fragment {
 
@@ -49,12 +50,11 @@ public class TranslateFragment extends Fragment {
 
     private EditText translateText;
     private ListView translateList;
-    private Button translateButton;
+    private Button translateButton;                          //TODO: Можем ли мы обойтись без хлеба?
     private Spinner toLanguageSpinner;
     private Spinner fromLanguageSpinner;
 
     private Context context;
-  //  private ArrayAdapter<String> spinnerAdapter;
 
     public TranslateFragment() {
     }
@@ -84,7 +84,6 @@ public class TranslateFragment extends Fragment {
         toLanguageSpinner = (Spinner) rootView.findViewById(R.id.toLanguageSpinner);
         fromLanguageSpinner = (Spinner) rootView.findViewById(R.id.fromLanguageSpinner);
 
-        //Translator.getInstance().setLanguages(languagesSpinner);
         translateButton.setOnClickListener(new OnClickTranslateButtonListener());
 
         new GetLanguagesTask(this).execute(Translator.getLanguagesLink());
@@ -102,11 +101,15 @@ public class TranslateFragment extends Fragment {
         fromLanguageSpinner.setSelection(66);
     }
 
+    //TODO: этот класс уже явно может отсюда смыться
     private class GetLanguagesTask extends  AsyncTask<String, Integer, ArrayList<Language>> {
 
         private TranslateFragment fragment;
 
-        public GetLanguagesTask(TranslateFragment fragment) { super(); this.fragment = fragment; }
+        public GetLanguagesTask(TranslateFragment fragment) {
+            super();
+            this.fragment = fragment;
+        }
 
         @Override
         protected ArrayList<Language> doInBackground(String... strings) {
@@ -153,7 +156,6 @@ public class TranslateFragment extends Fragment {
                     Log.println(Log.ERROR, "JSON", e.getMessage());
                     e.printStackTrace();
                 }
-
             }
             return result;
         }
@@ -164,6 +166,7 @@ public class TranslateFragment extends Fragment {
         }
     }
 
+    //TODO: Возможно стоит это вынести
     /**
      * Create button behavior class
      */
@@ -177,6 +180,7 @@ public class TranslateFragment extends Fragment {
         /**
          * Async class for use Translation API (need create own API in future)
          */
+        // TODO: Этому классу тут явно не место. (Висит тут, чтобы не забыть истинное предназначение листенера)
         private class TranslateTask extends AsyncTask<URL, Integer, String> {
 
             @Override

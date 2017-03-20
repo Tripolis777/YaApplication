@@ -1,9 +1,7 @@
 package com.example.vkaryagin.yaapplication.Core;
 
-import android.content.Context;
 import android.os.AsyncTask;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
+import com.example.vkaryagin.yaapplication.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,13 +21,12 @@ import javax.net.ssl.HttpsURLConnection;
  * Created by tripo on 3/19/2017.
  */
 
+//TODO: Подумать о необходимости этого класса и почему он singleton
+//TODO: обязательные и опциональные переменные запроса нужно как-то вынести если это возможно
 public class Translator {
 
     private static Translator instance;
     private static String defaultLanguage;
-
-    private static final String GET_LANGUAGES_LINK = "https://translate.yandex.net/api/v1.5/tr.json/getLangs?";
-    private static final String KEY = "trnsl.1.1.20170319T155623Z.19b34397c41f30d0.d868b6b5bbd2026a45f6ae0889f8a601f82eb776";
 
     private Translator() {
         defaultLanguage = "EN";
@@ -43,10 +40,8 @@ public class Translator {
     }
 
     public List<String> getLanguages() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(GET_LANGUAGES_LINK).append("ui=").append("en").append("&key=").append(KEY);
         try {
-            URL url = new URL(sb.toString());
+            URL url = new URL(this.getLanguagesLink());
             GetLanguagesTask getLanguagesTask = new GetLanguagesTask();
             return getLanguagesTask.doInBackground(url);
         } catch (MalformedURLException e) {
@@ -58,22 +53,21 @@ public class Translator {
 
     public static String getLanguagesLink() {
         StringBuilder sb = new StringBuilder();
-        sb.append(GET_LANGUAGES_LINK).append("ui=").append("ru").append("&key=").append(KEY);
+
+        sb.append(R.string.yt_api_main_link).append("/")
+            .append(R.string.yt_version).append("/")
+            .append(R.string.yt_response_json).append("/")
+            .append(R.string.yt_get_langs).append("?")
+            .append("ui=").append("ru").append("&")      //TODO: need replace "ru" by app lang variable
+            .append("key=").append(R.string.yt_api_key);
+
         return sb.toString();
     }
 
-    public void setLanguages (Spinner spinner) {
-        List<String> langs = getLanguages();
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(spinner.getContext(), android.R.layout.simple_spinner_item, langs);
-
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(spinnerAdapter);
-    }
-
+    //TODO: нужно дописать функцию
     public static String[] translate(String text) {
         return translate(text, defaultLanguage);
     }
-
     public static String[] translate(String text, String lang) {
         return null;
     }

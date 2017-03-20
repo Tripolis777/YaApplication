@@ -6,14 +6,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.TextView;
 
-import com.example.vkaryagin.yaapplication.MainActivity;
 import com.example.vkaryagin.yaapplication.R;
 
 /**
  * Created by tripo on 3/19/2017.
  */
+
+//TODO: Пока сказать нечего, надо хоть что-то написать
 
 public class FavoriteFragment extends Fragment {
 

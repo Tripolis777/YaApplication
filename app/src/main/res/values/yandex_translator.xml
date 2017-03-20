@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="yt_api_key">trnsl.1.1.20170319T155623Z.19b34397c41f30d0.d868b6b5bbd2026a45f6ae0889f8a601f82eb776</string>
+    <string name="yt_api_main_link">https://translate.yandex.net/api</string>
+    <string name="yt_version">v1.5</string>
+    <string name="yt_response_json">tr.json</string>
+    <string name="yt_response_xml">tr</string>
+    <string name="yt_get_langs">getLangs</string>
+    <string name="yt_detect_lang">detect</string>
+    <string name="yt_translate">translate</string>
+
+</resources>
