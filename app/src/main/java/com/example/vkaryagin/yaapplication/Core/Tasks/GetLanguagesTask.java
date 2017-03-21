@@ -1,13 +1,10 @@
 package com.example.vkaryagin.yaapplication.Core.Tasks;
 
-import android.app.Fragment;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.view.View;
 
 import com.example.vkaryagin.yaapplication.Core.Language;
 import com.example.vkaryagin.yaapplication.Core.WithLanguageSpinner;
-import com.example.vkaryagin.yaapplication.Fragments.TranslateFragment;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,7 +23,7 @@ import javax.net.ssl.HttpsURLConnection;
  * Created by v.karyagin on 3/21/17.
  */
 
-//TODO: этот класс уже явно может отсюда смыться
+//TODO: интерфейс это круто, но архитектуру надо продумать получше
 public class GetLanguagesTask extends  AsyncTask<String, Integer, ArrayList<Language>> {
 
     private WithLanguageSpinner object;

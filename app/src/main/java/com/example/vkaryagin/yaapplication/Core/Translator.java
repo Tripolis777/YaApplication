@@ -2,7 +2,6 @@ package com.example.vkaryagin.yaapplication.Core;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.print.PrintAttributes;
 
 import com.example.vkaryagin.yaapplication.R;
 
@@ -28,7 +27,6 @@ import javax.net.ssl.HttpsURLConnection;
 //TODO: обязательные и опциональные переменные запроса нужно как-то вынести если это возможно
 public class Translator {
 
-    private static Translator instance;
     private static String defaultLanguage;
     private Context context;
 
