@@ -5,7 +5,7 @@
     <string name="yt_version">v1.5</string>
     <string name="yt_response_json">tr.json</string>
     <string name="yt_response_xml">tr</string>
-    <string name="yt_get_langs">getLangs</string>
+    <string name="yt_get_langs">getLangs?ui=%1$s&amp;key=%2$s</string>
     <string name="yt_detect_lang">detect</string>
     <string name="yt_translate">translate</string>
 

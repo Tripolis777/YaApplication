@@ -1,6 +1,9 @@
 package com.example.vkaryagin.yaapplication.Core;
 
+import android.content.Context;
 import android.os.AsyncTask;
+import android.print.PrintAttributes;
+
 import com.example.vkaryagin.yaapplication.R;
 
 import org.json.JSONException;
@@ -27,16 +30,11 @@ public class Translator {
 
     private static Translator instance;
     private static String defaultLanguage;
+    private Context context;
 
-    private Translator() {
+    public Translator(Context context) {
+        this.context = context;
         defaultLanguage = "EN";
-    }
-
-    public static Translator getInstance() {
-        if (instance == null) {
-            instance = new Translator();
-        }
-        return instance;
     }
 
     public List<String> getLanguages() {
@@ -51,15 +49,15 @@ public class Translator {
         return null;
     }
 
-    public static String getLanguagesLink() {
+    public String getLanguagesLink() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append(R.string.yt_api_main_link).append("/")
-            .append(R.string.yt_version).append("/")
-            .append(R.string.yt_response_json).append("/")
-            .append(R.string.yt_get_langs).append("?")
-            .append("ui=").append("ru").append("&")      //TODO: need replace "ru" by app lang variable
-            .append("key=").append(R.string.yt_api_key);
+        sb.append(context.getString(R.string.yt_api_main_link)).append("/")
+            .append(context.getString(R.string.yt_version)).append("/")
+            .append(context.getString(R.string.yt_response_json)).append("/")
+            .append(context.getString(R.string.yt_get_langs,
+                    context.getResources().getConfiguration().locale.getLanguage(),
+                    context.getString(R.string.yt_api_key)));
 
         return sb.toString();
     }
