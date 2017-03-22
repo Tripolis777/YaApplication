@@ -13,10 +13,10 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 
+import com.example.vkaryagin.yaapplication.Core.Callable;
 import com.example.vkaryagin.yaapplication.Core.Language;
 import com.example.vkaryagin.yaapplication.Core.Tasks.GetLanguagesTask;
 import com.example.vkaryagin.yaapplication.Core.Translator;
-import com.example.vkaryagin.yaapplication.Core.WithLanguageSpinner;
 import com.example.vkaryagin.yaapplication.R;
 
 import java.net.URL;
@@ -33,7 +33,7 @@ import java.util.ArrayList;
 //TODO: Cache
 //TODO: Refactoring
 
-public class TranslateFragment extends Fragment implements WithLanguageSpinner {
+public class TranslateFragment extends Fragment {
 
     /**
      * The fragment argument representing the section number for this
@@ -82,12 +82,19 @@ public class TranslateFragment extends Fragment implements WithLanguageSpinner {
 
         translateButton.setOnClickListener(new OnClickTranslateButtonListener());
 
-        new GetLanguagesTask(this).execute(translator.getLanguagesLink());
+        translator.setLanguages(new Callable<ArrayList<Language>>() {
+            @Override
+            public void callback(ArrayList<Language> value) {
+                TranslateFragment.this.initSpinnersAdapter(value);
+                TranslateFragment.this.setInputLanguage(translator.getLanguageNumber(
+                        context.getResources().getConfiguration().locale.getLanguage()
+                ));
+            }
+        });
 
         return rootView;
     }
 
-    @Override
     public void initSpinnersAdapter(ArrayList<Language> values) {
         ArrayAdapter<Language> spinnerAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, values);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -95,12 +102,10 @@ public class TranslateFragment extends Fragment implements WithLanguageSpinner {
         fromLanguageSpinner.setAdapter(spinnerAdapter);
     }
 
-    @Override
     public void setInputLanguage(int langNumber) {
         fromLanguageSpinner.setSelection(langNumber);
     }
 
-    @Override
     public void setInputLanguage(String langCode) {
         //TODO: Create
     }

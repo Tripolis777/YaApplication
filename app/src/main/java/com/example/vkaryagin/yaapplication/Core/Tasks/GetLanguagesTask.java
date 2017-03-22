@@ -3,8 +3,8 @@ package com.example.vkaryagin.yaapplication.Core.Tasks;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.example.vkaryagin.yaapplication.Core.Callable;
 import com.example.vkaryagin.yaapplication.Core.Language;
-import com.example.vkaryagin.yaapplication.Core.WithLanguageSpinner;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,12 +23,11 @@ import javax.net.ssl.HttpsURLConnection;
  * Created by v.karyagin on 3/21/17.
  */
 
-//TODO: интерфейс это круто, но архитектуру надо продумать получше
 public class GetLanguagesTask extends  AsyncTask<String, Integer, ArrayList<Language>> {
 
-    private WithLanguageSpinner object;
+    private Callable<ArrayList<Language>> object;
 
-    public GetLanguagesTask(WithLanguageSpinner object) {
+    public GetLanguagesTask(Callable<ArrayList<Language>> object) {
         super();
         this.object = object;
     }
@@ -58,12 +57,12 @@ public class GetLanguagesTask extends  AsyncTask<String, Integer, ArrayList<Lang
 
                 String response = stringBuilder.toString();
                 JSONObject res = new JSONObject(response);
-                JSONObject langs = res.getJSONObject("langs");
+                JSONObject langs = res.getJSONObject("langs");    // TODO: Is "langs" magic?
 
                 for (Iterator<String> it = langs.keys(); it.hasNext(); ) {
                     String langCode = it.next();
                     String lang = langs.getString(langCode);
-                    Log.println(Log.DEBUG, "LANGUAGE", String.format("Lang code: %s, Lang Desc: %s", langCode, lang));
+                    Log.println(Log.DEBUG, this.getClass().getName(), String.format("Lang Code: %s, Lang Desc: %s", langCode, lang));
 
                     result.add(new Language(langCode, lang));
                 }
@@ -84,6 +83,6 @@ public class GetLanguagesTask extends  AsyncTask<String, Integer, ArrayList<Lang
 
     @Override
     protected void onPostExecute(ArrayList<Language> result) {
-        object.initSpinnersAdapter(result);
+        object.callback(result);
     }
 }

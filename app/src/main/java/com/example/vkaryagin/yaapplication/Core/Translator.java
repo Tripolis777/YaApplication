@@ -3,6 +3,8 @@ package com.example.vkaryagin.yaapplication.Core;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import com.example.vkaryagin.yaapplication.Core.Tasks.GetLanguagesTask;
+import com.example.vkaryagin.yaapplication.Fragments.TranslateFragment;
 import com.example.vkaryagin.yaapplication.R;
 
 import org.json.JSONException;
@@ -14,6 +16,7 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -29,22 +32,36 @@ public class Translator {
 
     private static String defaultLanguage;
     private Context context;
+    private ArrayList<Language> langs;
+    private HashMap<String, Integer> langNumbers;
 
     public Translator(Context context) {
         this.context = context;
+        langs = new ArrayList<>();
+        langNumbers = new HashMap<>();
         defaultLanguage = "EN";
     }
 
-    public List<String> getLanguages() {
-        try {
-            URL url = new URL(this.getLanguagesLink());
-            GetLanguagesTask getLanguagesTask = new GetLanguagesTask();
-            return getLanguagesTask.doInBackground(url);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
+    public void setLanguages(final Callable<ArrayList<Language>> callback) {
+        if (!langs.isEmpty()) {
+            callback.callback(langs);
+            return;
         }
 
-        return null;
+        GetLanguagesTask getLanguagesTask = new GetLanguagesTask(new Callable<ArrayList<Language>>() {
+                @Override
+                public void callback(ArrayList<Language> value) {
+                    langs = value;
+                    Translator.this.initializeLangNumbers();
+
+                    callback.callback(value);
+                }
+            });
+        getLanguagesTask.execute(this.getLanguagesLink());
+    }
+
+    public ArrayList<Language> getLanguages() {
+        return langs;
     }
 
     public String getLanguagesLink() {
@@ -60,6 +77,19 @@ public class Translator {
         return sb.toString();
     }
 
+    public int getLanguageNumber(String langCode) {
+        if (langs.size() != langCode.length()) {
+            this.initializeLangNumbers();
+        }
+        return langNumbers.get(langCode);
+    }
+
+    private void initializeLangNumbers(){
+        langNumbers.clear();
+        for (int i = 0; i < langs.size(); i++)
+             langNumbers.put(langs.get(i).getLanguageCode(), i);
+    }
+
     //TODO: нужно дописать функцию
     public static String[] translate(String text) {
         return translate(text, defaultLanguage);
@@ -68,43 +98,4 @@ public class Translator {
         return null;
     }
 
-    private class GetLanguagesTask extends AsyncTask<URL, Integer, List<String>> {
-
-        @Override
-        protected List<String> doInBackground(URL... urls) {
-            List<String> result = new ArrayList<>();
-            for (int i = 0; i < urls.length; i++) {
-                URL url = urls[i];
-                StringBuilder stringBuilder = new StringBuilder();
-
-                try {
-                    HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-
-                    BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-
-                    String line;
-                    while ((line = br.readLine()) != null){
-                        stringBuilder.append(line);
-                    }
-                    br.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                try {
-                    String response = stringBuilder.toString();
-                    JSONObject res = new JSONObject(response);
-                    JSONObject langs = res.getJSONObject("langs");
-
-                    for (Iterator<String> it = langs.keys(); it.hasNext(); )
-                        result.add(it.next());
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            return result;
-        }
-    }
 }
