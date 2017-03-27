@@ -59,16 +59,6 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < tabLayout.getTabCount() && i < toolbarIconsIds.length; i++) {
             tabLayout.getTabAt(i).setIcon(toolbarIconsIds[i]);
         }
-
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
-
     }
 
 

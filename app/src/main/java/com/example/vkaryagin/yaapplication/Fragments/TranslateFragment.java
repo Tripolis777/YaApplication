@@ -14,9 +14,9 @@ import android.widget.ListView;
 import android.widget.Spinner;
 
 import com.example.vkaryagin.yaapplication.Core.Callable;
-import com.example.vkaryagin.yaapplication.Core.Language;
-import com.example.vkaryagin.yaapplication.Core.Tasks.GetLanguagesTask;
-import com.example.vkaryagin.yaapplication.Core.Translator;
+import com.example.vkaryagin.yaapplication.Core.Languages;
+import com.example.vkaryagin.yaapplication.Core.Translate;
+import com.example.vkaryagin.yaapplication.Core.YaTranslateManager;
 import com.example.vkaryagin.yaapplication.R;
 
 import java.net.URL;
@@ -48,7 +48,7 @@ public class TranslateFragment extends Fragment {
     private Spinner fromLanguageSpinner;
 
     private Context context;
-    private Translator translator;
+    //private YaTranslateManager translateManager;
 
     public TranslateFragment() {
     }
@@ -71,7 +71,7 @@ public class TranslateFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_translate, container, false);
         context = this.getContext();
 
-        translator = new Translator(context);
+        YaTranslateManager translateManager = YaTranslateManager.getInstance();
 
         // Initialize
         translateText   = (EditText) rootView.findViewById(R.id.translateTextEdit);
@@ -82,11 +82,11 @@ public class TranslateFragment extends Fragment {
 
         translateButton.setOnClickListener(new OnClickTranslateButtonListener());
 
-        translator.setLanguages(new Callable<ArrayList<Language>>() {
+        translateManager.executeLanguages(context, new Callable<Languages>() {
             @Override
-            public void callback(ArrayList<Language> value) {
+            public void callback(Languages value) {
                 TranslateFragment.this.initSpinnersAdapter(value);
-                TranslateFragment.this.setInputLanguage(translator.getLanguageNumber(
+                TranslateFragment.this.setInputLanguage(value.getLanguageNumber(
                         context.getResources().getConfiguration().locale.getLanguage()
                 ));
             }
@@ -95,8 +95,9 @@ public class TranslateFragment extends Fragment {
         return rootView;
     }
 
-    public void initSpinnersAdapter(ArrayList<Language> values) {
-        ArrayAdapter<Language> spinnerAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, values);
+    public void initSpinnersAdapter(Languages langs) {
+        ArrayAdapter<Languages.Language> spinnerAdapter = new ArrayAdapter<>(context,
+                android.R.layout.simple_spinner_item, langs.getLanguages());
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         toLanguageSpinner.setAdapter(spinnerAdapter);
         fromLanguageSpinner.setAdapter(spinnerAdapter);
@@ -104,10 +105,6 @@ public class TranslateFragment extends Fragment {
 
     public void setInputLanguage(int langNumber) {
         fromLanguageSpinner.setSelection(langNumber);
-    }
-
-    public void setInputLanguage(String langCode) {
-        //TODO: Create
     }
 
     //TODO: Возможно стоит это вынести
@@ -118,19 +115,34 @@ public class TranslateFragment extends Fragment {
 
         @Override
         public void onClick(View view) {
+            String text = translateText.getText().toString();
 
-        }
-
-        /**
-         * Async class for use Translation API (need create own API in future)
-         */
-        // TODO: Этому классу тут явно не место. (Висит тут, чтобы не забыть истинное предназначение листенера)
-        private class TranslateTask extends AsyncTask<URL, Integer, String> {
-
-            @Override
-            protected String doInBackground(URL... urls) {
-                return null;
+            if (text.isEmpty()) { return; }
+            if (toLanguageSpinner.getAdapter().isEmpty() ||
+                    fromLanguageSpinner.getAdapter().isEmpty()) {
+                return;
             }
+
+            Languages.Language langOut = (Languages.Language) toLanguageSpinner.getSelectedItem();
+            Languages.Language langIn = (Languages.Language) fromLanguageSpinner.getSelectedItem();
+
+            YaTranslateManager translateManager = YaTranslateManager.getInstance();
+            translateManager.executeTranslate(
+                    new Translate.Params(text, langIn.getLanguageCode(), langOut.getLanguageCode()),
+                    context,
+                    new Callable<Translate>() {
+                        @Override
+                        public void callback(Translate value) {
+
+                            if (value.checkResponseCode()) return;
+
+                            ArrayAdapter<String> translatedAdapter = new ArrayAdapter<String>(context,
+                                    android.R.layout.simple_list_item_1, value.getTranslatedText());
+
+                            translateList.setAdapter(translatedAdapter);
+                        }
+                    }
+            );
         }
     }
 }
