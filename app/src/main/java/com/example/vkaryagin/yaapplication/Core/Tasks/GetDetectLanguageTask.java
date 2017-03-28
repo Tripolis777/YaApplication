@@ -4,7 +4,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.vkaryagin.yaapplication.Core.Callable;
-import com.example.vkaryagin.yaapplication.Core.Translate;
+import com.example.vkaryagin.yaapplication.Core.DetectLanguage;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,21 +17,20 @@ import java.net.URL;
 import javax.net.ssl.HttpsURLConnection;
 
 /**
- * Created by tripo on 3/27/2017.
+ * Created by tripo on 3/28/2017.
  */
 
-public class GetTranslateTask extends AsyncTask<String, Integer, Translate> {
+public class GetDetectLanguageTask extends AsyncTask<String, Integer, DetectLanguage> {
+    private Callable<DetectLanguage> object;
 
-    private Callable<Translate> object;
-
-    public GetTranslateTask(Callable<Translate> object) {
+    public GetDetectLanguageTask(Callable<DetectLanguage> object) {
         super();
         this.object = object;
     }
 
     @Override
-    protected Translate doInBackground(String... strings) {
-        Translate result = new Translate();
+    protected DetectLanguage doInBackground(String... strings) {
+        DetectLanguage result = new DetectLanguage();
         for (int i = 0; i < strings.length; i++) {
             String link = strings[i];
 
@@ -73,7 +72,7 @@ public class GetTranslateTask extends AsyncTask<String, Integer, Translate> {
     }
 
     @Override
-    protected void onPostExecute(Translate result) {
+    protected void onPostExecute(DetectLanguage result) {
         object.callback(result);
     }
 

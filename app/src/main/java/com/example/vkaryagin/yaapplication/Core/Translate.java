@@ -1,23 +1,30 @@
 package com.example.vkaryagin.yaapplication.Core;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
  * Created by tripo on 3/27/2017.
  */
 
-public class Translate {
+public class Translate implements Initiable {
+
+    /**
+     * Code variants list
+     * 200 - Операция выполнена успешно
+     * 401 - Неправильный API-ключ
+     * 402 - API-ключ заблокирован
+     * 404 - Превышено суточное ограничение на объем переведенного текста
+     * 413 - Превышен максимально допустимый размер текста
+     * 422 - Текст не может быть переведен
+     * 501 - Заданное направление перевода не поддерживается
+     */
 
     private List<String> text;
     private int responseCode;

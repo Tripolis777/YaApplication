@@ -3,6 +3,7 @@ package com.example.vkaryagin.yaapplication.Core;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.example.vkaryagin.yaapplication.Core.Tasks.GetDetectLanguageTask;
 import com.example.vkaryagin.yaapplication.Core.Tasks.GetLanguagesTask;
 import com.example.vkaryagin.yaapplication.Core.Tasks.GetTranslateTask;
 import com.example.vkaryagin.yaapplication.R;
@@ -56,11 +57,18 @@ public class YaTranslateManager {
         getTranslateTask.execute(YandexHttpApi.getTranslateLink(context, params));
     }
 
+    public void executeDetect(String text, final Context context,
+                              final Callable<DetectLanguage> callback) {
+
+        GetDetectLanguageTask getDetectLanguageTask = new GetDetectLanguageTask(callback);
+        getDetectLanguageTask.execute(YandexHttpApi.getDetectLink(context, text));
+    }
+
     public void resetLanguages() {
         this.languages = new Languages();
     }
 
-
+    public Languages getLanguages() { return this.languages; }
 
     private static class YandexHttpApi {
 
@@ -88,6 +96,17 @@ public class YaTranslateManager {
             return sb.toString();
         }
 
+        @NonNull
+        public static String getDetectLink(final Context context, String text) {
+            StringBuilder sb = getLinkBuilder(context);
+
+            sb.append(context.getString(R.string.yt_detect_lang,
+                    context.getString(R.string.yt_api_key),
+                    text
+            ));
+
+            return sb.toString();
+        }
 
         private static StringBuilder getLinkBuilder(final Context context) {
             StringBuilder sb = new StringBuilder();

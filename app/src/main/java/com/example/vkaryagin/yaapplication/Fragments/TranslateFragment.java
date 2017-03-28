@@ -4,16 +4,22 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.example.vkaryagin.yaapplication.Core.Callable;
+import com.example.vkaryagin.yaapplication.Core.DetectLanguage;
 import com.example.vkaryagin.yaapplication.Core.Languages;
 import com.example.vkaryagin.yaapplication.Core.Translate;
 import com.example.vkaryagin.yaapplication.Core.YaTranslateManager;
@@ -21,6 +27,8 @@ import com.example.vkaryagin.yaapplication.R;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 /**
@@ -66,7 +74,7 @@ public class TranslateFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_translate, container, false);
         context = this.getContext();
@@ -81,6 +89,19 @@ public class TranslateFragment extends Fragment {
         fromLanguageSpinner = (Spinner) rootView.findViewById(R.id.fromLanguageSpinner);
 
         translateButton.setOnClickListener(new OnClickTranslateButtonListener());
+        translateText.addTextChangedListener(new OnChangeTranslateText());
+
+        fromLanguageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                Log.d("OnItemSelected", String.format("i: %d, l: %d", i, l));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         translateManager.executeLanguages(context, new Callable<Languages>() {
             @Override
@@ -105,6 +126,52 @@ public class TranslateFragment extends Fragment {
 
     public void setInputLanguage(int langNumber) {
         fromLanguageSpinner.setSelection(langNumber);
+    }
+    public void setOutputLanguage(int langNumber) {
+        toLanguageSpinner.setSelection(langNumber);
+    }
+
+    public void showToast(String message) {
+        Toast toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
+        toast.show();
+    }
+
+    private class OnChangeTranslateText implements TextWatcher {
+
+        public OnChangeTranslateText() {}
+
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            if (i1 == 0 && i != 0) {
+                final YaTranslateManager yaTranslateManager = YaTranslateManager.getInstance();
+                yaTranslateManager.executeDetect(charSequence.toString(), context,
+                        new Callable<DetectLanguage>() {
+                    @Override
+                    public void callback(DetectLanguage value) {
+                        TranslateFragment.this.setInputLanguage(
+                                yaTranslateManager.getLanguages().getLanguageNumber(
+                                        value.getLang()
+                                ));
+                        TranslateFragment.this.setOutputLanguage(
+                                yaTranslateManager.getLanguages().getLanguageNumber(
+                                        context.getResources().getConfiguration().locale.getLanguage()
+                                )
+                        );
+                    }
+                });
+            }
+        }
+
+        @Override
+        public void afterTextChanged(final Editable editable) {
+
+        }
     }
 
     //TODO: Возможно стоит это вынести

@@ -14,7 +14,13 @@ import java.util.List;
  * Created by tripo on 3/27/2017.
  */
 
-public class Languages {
+public class Languages implements Initiable {
+
+    /**
+     * Список code
+     * 401 - Неправильный API-ключ
+     * 402 - API-ключ заблокирован
+     */
 
     private List<Language> langs;
     private HashMap<String, Integer> langNumbers;
