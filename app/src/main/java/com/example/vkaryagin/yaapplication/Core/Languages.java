@@ -16,12 +16,6 @@ import java.util.List;
 
 public class Languages implements Initiable {
 
-    /**
-     * Список code
-     * 401 - Неправильный API-ключ
-     * 402 - API-ключ заблокирован
-     */
-
     private List<Language> langs;
     private HashMap<String, Integer> langNumbers;
 

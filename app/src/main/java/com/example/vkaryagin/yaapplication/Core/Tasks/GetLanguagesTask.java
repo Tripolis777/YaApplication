@@ -9,6 +9,7 @@ import com.example.vkaryagin.yaapplication.Core.Languages;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -39,7 +40,7 @@ public class GetLanguagesTask extends  AsyncTask<String, Integer, Languages> {
 
                 Log.println(Log.INFO, "CONNECTION", String.format("Response code: %d", connection.getResponseCode()));
 
-                if(connection.getResponseCode() != 200) return result;
+                if(connection.getResponseCode() != HttpURLConnection.HTTP_OK) return result;
 
                 StringBuilder stringBuilder = new StringBuilder();
                 BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -68,4 +69,27 @@ public class GetLanguagesTask extends  AsyncTask<String, Integer, Languages> {
     protected void onPostExecute(Languages result) {
         object.callback(result);
     }
+
+
+//    public static class ResponseObject<T> {
+//        private T object;
+//        private int responseCode;
+//        private String responseMessage;
+//
+//
+//        public ResponseObject(T object) {
+//            this.object = object;
+//            responseCode = HttpURLConnection.HTTP_OK;
+//        }
+//
+//        public ResponseObject(int responseCode, String responseMessage) {
+//            this.responseCode = responseCode;
+//            this.responseMessage = responseMessage;
+//        }
+//
+//        public boolean isDone() { return responseCode == HttpURLConnection.HTTP_OK; }
+//        public T getObject() { return this.object; }
+//        public int getResponseCode() { return this.responseCode; }
+//        public String getResponseMessage() { return this.responseMessage; }
+//    }
 }

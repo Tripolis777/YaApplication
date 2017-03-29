@@ -11,4 +11,13 @@
     <string name="yt_translate">translate?key=%1$s&amp;text=%2$s&amp;lang=%3$s</string>
     <!--&amp;format=%4$s&amp;options=%5$s-->
 
+
+    <!--Response code descriptions-->
+    <string name="ya_response_code_200">Операция выполнена успешно</string>
+    <string name="ya_response_code_401">Неправильный API-ключ</string>
+    <string name="ya_response_code_402">API-ключ заблокирован</string>
+    <string name="ya_response_code_404">Превышено суточное ограничение на объем переведенного текста</string>
+    <string name="ya_response_code_413">Превышен максимально допустимый размер текста</string>
+    <string name="ya_response_code_422">Текст не может быть переведен</string>
+    <string name="ya_response_code_501">Заданное направление перевода не поддерживается</string>
 </resources>

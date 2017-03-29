@@ -1,7 +1,9 @@
 package com.example.vkaryagin.yaapplication.Core;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
 import android.support.annotation.NonNull;
+import android.widget.Toast;
 
 import com.example.vkaryagin.yaapplication.Core.Tasks.GetDetectLanguageTask;
 import com.example.vkaryagin.yaapplication.Core.Tasks.GetLanguagesTask;
@@ -39,6 +41,8 @@ public class YaTranslateManager {
             return;
         }
 
+        if (!this.checkNetwork(context)) return;
+
         GetLanguagesTask getLanguagesTask = new GetLanguagesTask(new Callable<Languages>() {
             @Override
             public void callback(Languages value) {
@@ -52,6 +56,7 @@ public class YaTranslateManager {
     public void executeTranslate(Translate.Params params, final Context context,
                                  final Callable<Translate> callback) {
         //Some cache code
+        if (!this.checkNetwork(context)) return;
 
         GetTranslateTask getTranslateTask = new GetTranslateTask(callback);
         getTranslateTask.execute(YandexHttpApi.getTranslateLink(context, params));
@@ -60,6 +65,8 @@ public class YaTranslateManager {
     public void executeDetect(String text, final Context context,
                               final Callable<DetectLanguage> callback) {
 
+        if (!this.checkNetwork(context)) return;
+
         GetDetectLanguageTask getDetectLanguageTask = new GetDetectLanguageTask(callback);
         getDetectLanguageTask.execute(YandexHttpApi.getDetectLink(context, text));
     }
@@ -67,8 +74,18 @@ public class YaTranslateManager {
     public void resetLanguages() {
         this.languages = new Languages();
     }
-
     public Languages getLanguages() { return this.languages; }
+
+    private boolean checkNetwork(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager)
+                context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        boolean connected = connectivityManager.getActiveNetworkInfo().isConnected();
+
+        if (!connected)
+           Toast.makeText(context, "Not connected to network", Toast.LENGTH_SHORT);
+
+        return connected;
+    }
 
     private static class YandexHttpApi {
 

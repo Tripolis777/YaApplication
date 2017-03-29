@@ -11,14 +11,6 @@ import org.json.JSONObject;
 
 public class DetectLanguage implements Initiable {
 
-    /**
-     * Список кодов
-     * 200 - Операция выполнена успешно
-     * 401 - Неправильный API-ключ
-     * 402 - API-ключ заблокирован
-     * 404 - Превышено суточное ограничение на объем переведенного текста
-     */
-
     private String langCode;
     private int code;
 

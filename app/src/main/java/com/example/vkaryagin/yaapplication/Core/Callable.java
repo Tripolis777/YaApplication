@@ -6,4 +6,7 @@ package com.example.vkaryagin.yaapplication.Core;
 
 public interface Callable<T> {
     public void callback(T value);
+
+    void done(T value);
+    void error(YaTranslateTask.Response res);
 }
