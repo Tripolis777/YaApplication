@@ -49,6 +49,12 @@ public class YaTranslateManager {
                 languages = value;
                 callback.callback(value);
             }
+
+            @Override
+            public void done(Languages value) {}
+
+            @Override
+            public void error(YaTranslateTask.Response res) {}
         });
         getLanguagesTask.execute(YandexHttpApi.getLanguagesLink(context));
     }

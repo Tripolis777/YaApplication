@@ -23,6 +23,7 @@ import com.example.vkaryagin.yaapplication.Core.DetectLanguage;
 import com.example.vkaryagin.yaapplication.Core.Languages;
 import com.example.vkaryagin.yaapplication.Core.Translate;
 import com.example.vkaryagin.yaapplication.Core.YaTranslateManager;
+import com.example.vkaryagin.yaapplication.Core.YaTranslateTask;
 import com.example.vkaryagin.yaapplication.R;
 
 import java.net.URL;
@@ -111,6 +112,12 @@ public class TranslateFragment extends Fragment {
                         context.getResources().getConfiguration().locale.getLanguage()
                 ));
             }
+
+            @Override
+            public void done(Languages value) {}
+
+            @Override
+            public void error(YaTranslateTask.Response res) {}
         });
 
         return rootView;
@@ -164,7 +171,13 @@ public class TranslateFragment extends Fragment {
                                 )
                         );
                     }
-                });
+
+                    @Override
+                    public void done(DetectLanguage value) {}
+
+                    @Override
+                    public void error(YaTranslateTask.Response res) {}
+                    });
             }
         }
 
@@ -208,6 +221,12 @@ public class TranslateFragment extends Fragment {
 
                             translateList.setAdapter(translatedAdapter);
                         }
+
+                        @Override
+                        public void done(Translate value) {}
+
+                        @Override
+                        public void error(YaTranslateTask.Response res) {}
                     }
             );
         }
