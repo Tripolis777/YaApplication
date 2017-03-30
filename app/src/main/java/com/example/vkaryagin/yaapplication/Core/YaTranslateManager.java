@@ -2,12 +2,10 @@ package com.example.vkaryagin.yaapplication.Core;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
 
-import com.example.vkaryagin.yaapplication.Core.Tasks.GetDetectLanguageTask;
-import com.example.vkaryagin.yaapplication.Core.Tasks.GetLanguagesTask;
-import com.example.vkaryagin.yaapplication.Core.Tasks.GetTranslateTask;
 import com.example.vkaryagin.yaapplication.R;
 
 import java.util.HashMap;
@@ -37,25 +35,13 @@ public class YaTranslateManager {
 
     public void executeLanguages(final Context context, final Callable<Languages> callback) {
         if (!languages.isEmpty()) {
-            callback.callback(languages);
+            callback.done(languages);
             return;
         }
 
         if (!this.checkNetwork(context)) return;
 
-        GetLanguagesTask getLanguagesTask = new GetLanguagesTask(new Callable<Languages>() {
-            @Override
-            public void callback(Languages value) {
-                languages = value;
-                callback.callback(value);
-            }
-
-            @Override
-            public void done(Languages value) {}
-
-            @Override
-            public void error(YaTranslateTask.Response res) {}
-        });
+        YaTranslateTask<Languages> getLanguagesTask = new YaTranslateTask<>(languages, callback);
         getLanguagesTask.execute(YandexHttpApi.getLanguagesLink(context));
     }
 
@@ -64,7 +50,7 @@ public class YaTranslateManager {
         //Some cache code
         if (!this.checkNetwork(context)) return;
 
-        GetTranslateTask getTranslateTask = new GetTranslateTask(callback);
+        YaTranslateTask<Translate> getTranslateTask = new YaTranslateTask<>(new Translate(), callback);
         getTranslateTask.execute(YandexHttpApi.getTranslateLink(context, params));
     }
 
@@ -73,7 +59,7 @@ public class YaTranslateManager {
 
         if (!this.checkNetwork(context)) return;
 
-        GetDetectLanguageTask getDetectLanguageTask = new GetDetectLanguageTask(callback);
+        YaTranslateTask<DetectLanguage> getDetectLanguageTask = new YaTranslateTask<>(new DetectLanguage(), callback);
         getDetectLanguageTask.execute(YandexHttpApi.getDetectLink(context, text));
     }
 
@@ -83,9 +69,13 @@ public class YaTranslateManager {
     public Languages getLanguages() { return this.languages; }
 
     private boolean checkNetwork(Context context) {
+        boolean connected = false;
+
         ConnectivityManager connectivityManager = (ConnectivityManager)
                 context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        boolean connected = connectivityManager.getActiveNetworkInfo().isConnected();
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        if (networkInfo != null)
+            connected = networkInfo.isConnected();
 
         if (!connected)
            Toast.makeText(context, "Not connected to network", Toast.LENGTH_SHORT);

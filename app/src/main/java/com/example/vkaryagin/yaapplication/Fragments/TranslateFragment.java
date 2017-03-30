@@ -56,6 +56,9 @@ public class TranslateFragment extends Fragment {
     private Spinner toLanguageSpinner;
     private Spinner fromLanguageSpinner;
 
+    private ArrayAdapter<Languages.Language> languagesAdapter;
+    private boolean autoDetect;
+
     private Context context;
     //private YaTranslateManager translateManager;
 
@@ -82,12 +85,20 @@ public class TranslateFragment extends Fragment {
 
         YaTranslateManager translateManager = YaTranslateManager.getInstance();
 
+        languagesAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item);
+        languagesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        autoDetect = false;
+
         // Initialize
         translateText   = (EditText) rootView.findViewById(R.id.translateTextEdit);
         translateList   = (ListView) rootView.findViewById(R.id.translateList);
         translateButton = (Button) rootView.findViewById(R.id.translateButton);
         toLanguageSpinner = (Spinner) rootView.findViewById(R.id.toLanguageSpinner);
         fromLanguageSpinner = (Spinner) rootView.findViewById(R.id.fromLanguageSpinner);
+
+        toLanguageSpinner.setAdapter(languagesAdapter);
+        fromLanguageSpinner.setAdapter(languagesAdapter);
 
         translateButton.setOnClickListener(new OnClickTranslateButtonListener());
         translateText.addTextChangedListener(new OnChangeTranslateText());
@@ -96,39 +107,36 @@ public class TranslateFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 Log.d("OnItemSelected", String.format("i: %d, l: %d", i, l));
+                autoDetect = false;
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
+            public void onNothingSelected(AdapterView<?> adapterView) {}
         });
 
         translateManager.executeLanguages(context, new Callable<Languages>() {
             @Override
-            public void callback(Languages value) {
+            public void done(Languages value) {
                 TranslateFragment.this.initSpinnersAdapter(value);
                 TranslateFragment.this.setInputLanguage(value.getLanguageNumber(
                         context.getResources().getConfiguration().locale.getLanguage()
                 ));
+                autoDetect = true;
             }
 
             @Override
-            public void done(Languages value) {}
-
-            @Override
-            public void error(YaTranslateTask.Response res) {}
+            public void error(final YaTranslateTask.Response res) {
+                Toast.makeText(context, "Cant connect to get languages. " + res.toString(), Toast.LENGTH_SHORT).show();
+            }
         });
 
         return rootView;
     }
 
     public void initSpinnersAdapter(Languages langs) {
-        ArrayAdapter<Languages.Language> spinnerAdapter = new ArrayAdapter<>(context,
-                android.R.layout.simple_spinner_item, langs.getLanguages());
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        toLanguageSpinner.setAdapter(spinnerAdapter);
-        fromLanguageSpinner.setAdapter(spinnerAdapter);
+        if (!languagesAdapter.isEmpty()) languagesAdapter.clear();
+        languagesAdapter.addAll(langs.getLanguages());
+        languagesAdapter.notifyDataSetChanged();
     }
 
     public void setInputLanguage(int langNumber) {
@@ -138,29 +146,22 @@ public class TranslateFragment extends Fragment {
         toLanguageSpinner.setSelection(langNumber);
     }
 
-    public void showToast(String message) {
-        Toast toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
-        toast.show();
-    }
-
     private class OnChangeTranslateText implements TextWatcher {
 
         public OnChangeTranslateText() {}
 
         @Override
-        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-        }
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 
         @Override
         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-            if (i1 == 0 && i != 0) {
+            if (i1 == 0 && i != 0 && autoDetect) {
                 final YaTranslateManager yaTranslateManager = YaTranslateManager.getInstance();
                 yaTranslateManager.executeDetect(charSequence.toString(), context,
                         new Callable<DetectLanguage>() {
                     @Override
-                    public void callback(DetectLanguage value) {
+                    public void done(DetectLanguage value) {
                         TranslateFragment.this.setInputLanguage(
                                 yaTranslateManager.getLanguages().getLanguageNumber(
                                         value.getLang()
@@ -170,13 +171,13 @@ public class TranslateFragment extends Fragment {
                                         context.getResources().getConfiguration().locale.getLanguage()
                                 )
                         );
+                        autoDetect = true;
                     }
 
                     @Override
-                    public void done(DetectLanguage value) {}
-
-                    @Override
-                    public void error(YaTranslateTask.Response res) {}
+                    public void error(final YaTranslateTask.Response res) {
+                        Toast.makeText(context, "Cont connect to detect language. " + res.toString(), Toast.LENGTH_SHORT).show();
+                    }
                     });
             }
         }
@@ -212,8 +213,7 @@ public class TranslateFragment extends Fragment {
                     context,
                     new Callable<Translate>() {
                         @Override
-                        public void callback(Translate value) {
-
+                        public void done(Translate value) {
                             if (value.checkResponseCode()) return;
 
                             ArrayAdapter<String> translatedAdapter = new ArrayAdapter<String>(context,
@@ -223,10 +223,9 @@ public class TranslateFragment extends Fragment {
                         }
 
                         @Override
-                        public void done(Translate value) {}
-
-                        @Override
-                        public void error(YaTranslateTask.Response res) {}
+                        public void error(final YaTranslateTask.Response res) {
+                            Toast.makeText(context, "Cont translate text. " + res.toString(), Toast.LENGTH_SHORT).show();
+                        }
                     }
             );
         }

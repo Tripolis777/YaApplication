@@ -84,12 +84,17 @@ public class YaTranslateTask<T extends Initiable> extends AsyncTask<String, Inte
     }
 
     public static class Response {
-        public int responseCode;
-        public String responseMessage;
+        public int code;
+        public String message;
 
         public Response(int responseCode, String responseMessage) {
-            this.responseCode = responseCode;
-            this.responseMessage = responseMessage;
+            this.code = responseCode;
+            this.message = responseMessage;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("Code: %d, Message: %s", code, message);
         }
     }
 
@@ -107,7 +112,7 @@ public class YaTranslateTask<T extends Initiable> extends AsyncTask<String, Inte
             this.res = new Response(responseCode, responseMessage);
         }
 
-        public boolean isDone() { return res.responseCode == HttpURLConnection.HTTP_OK; }
+        public boolean isDone() { return res.code == HttpURLConnection.HTTP_OK; }
         public T getObject() { return this.object; }
         public Response getResponse() { return this.res; }
     }
