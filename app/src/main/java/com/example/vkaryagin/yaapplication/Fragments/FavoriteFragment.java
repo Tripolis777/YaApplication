@@ -1,12 +1,17 @@
 package com.example.vkaryagin.yaapplication.Fragments;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.example.vkaryagin.yaapplication.Database.Schema.FavoriteTranslate;
+import com.example.vkaryagin.yaapplication.Database.YaAppDBOpenHelper;
 import com.example.vkaryagin.yaapplication.R;
 
 /**
@@ -22,10 +27,21 @@ public class FavoriteFragment extends Fragment {
      * fragment.
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
+    private static final String[] QUERY_COLUMS = {
+            FavoriteTranslate.FavoriteTranslateEntry._ID,
+            FavoriteTranslate.FavoriteTranslateEntry.COLUMN_NAME_TRANSLATE_TEXT,
+            FavoriteTranslate.FavoriteTranslateEntry.COLUMN_NAME_TRANSLATED_TEXT,
+            FavoriteTranslate.FavoriteTranslateEntry.COLUMN_NAME_TRANSLATE_LANG,
+            FavoriteTranslate.FavoriteTranslateEntry.COLUMN_NAME_TRANSLATED_LANG
+    };
+
 
     private ListView favoriteList;
+    private ArrayAdapter<String> favoriteAdapter;
+    private final YaAppDBOpenHelper dbHelper;
 
     public FavoriteFragment() {
+        dbHelper = new YaAppDBOpenHelper(this.getContext(), null);
     }
 
     /**
@@ -46,7 +62,18 @@ public class FavoriteFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_favorite, container, false);
 
         favoriteList = (ListView) rootView.findViewById(R.id.favoroteList);
+
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.query(FavoriteTranslate.FavoriteTranslateEntry.TABLE_NAME,
+                QUERY_COLUMS, null, null, null, null, null);
+        
+
         return rootView;
+    }
+
+    private void initFavoriteAdapter() {
+        favoriteAdapter  = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1);
+
     }
 
 }

@@ -3,6 +3,7 @@ package com.example.vkaryagin.yaapplication.Fragments;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -14,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -52,7 +54,8 @@ public class TranslateFragment extends Fragment {
 
     private EditText translateText;
     private ListView translateList;
-    private Button translateButton;                          //TODO: Можем ли мы обойтись без хлеба?
+    private Button translateButton;
+    private ImageButton favoriteButton;
     private Spinner toLanguageSpinner;
     private Spinner fromLanguageSpinner;
 
@@ -94,6 +97,7 @@ public class TranslateFragment extends Fragment {
         translateText   = (EditText) rootView.findViewById(R.id.translateTextEdit);
         translateList   = (ListView) rootView.findViewById(R.id.translateList);
         translateButton = (Button) rootView.findViewById(R.id.translateButton);
+        favoriteButton = (ImageButton) rootView.findViewById(R.id.favoroteButton);
         toLanguageSpinner = (Spinner) rootView.findViewById(R.id.toLanguageSpinner);
         fromLanguageSpinner = (Spinner) rootView.findViewById(R.id.fromLanguageSpinner);
 
@@ -103,6 +107,8 @@ public class TranslateFragment extends Fragment {
         translateButton.setOnClickListener(new OnClickTranslateButtonListener());
         translateText.addTextChangedListener(new OnChangeTranslateText());
 
+        favoriteButton.setOnClickListener(new OnClickFavoriteButtonListener());
+        
         fromLanguageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -224,10 +230,18 @@ public class TranslateFragment extends Fragment {
 
                         @Override
                         public void error(final YaTranslateTask.Response res) {
-                            Toast.makeText(context, "Cont translate text. " + res.toString(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "Cant translate text. " + res.toString(), Toast.LENGTH_SHORT).show();
                         }
                     }
             );
+        }
+    }
+
+    private class OnClickFavoriteButtonListener implements View.OnClickListener {
+
+        @Override
+        public void onClick(View view) {
+
         }
     }
 }

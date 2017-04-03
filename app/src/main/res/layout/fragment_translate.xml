@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- TODO: Надо бы покрасивее всё сделать как-то! -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -49,13 +50,28 @@
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/translateButton"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_column="12"
-        android:layout_row="0"
-        android:text="Button" />
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/translateButton"
+            android:layout_width="199dp"
+            android:layout_height="wrap_content"
+            android:layout_column="12"
+            android:layout_row="0"
+            android:layout_weight="2.86"
+            android:text="Перевести" />
+
+        <ImageButton
+            android:id="@+id/favoroteButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@android:drawable/btn_star"
+            android:visibility="visible" />
+
+    </LinearLayout>
 
     <ListView
         android:id="@+id/translateList"
