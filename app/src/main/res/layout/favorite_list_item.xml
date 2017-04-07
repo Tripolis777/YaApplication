@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/translateText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:text="TextView"
+        android:textStyle="bold"
+        tools:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/translatedText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/translateText"
+        android:layout_marginLeft="41dp"
+        android:layout_marginStart="41dp"
+        android:text="TextView"
+        android:textStyle="italic"
+        tools:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/translateLang"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="right"
+        android:text="TextView"
+        tools:textAlignment="gravity"
+        android:layout_below="@+id/translatedText"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/translateIcon"
+        android:layout_toLeftOf="@+id/translateIcon" />
+
+    <TextView
+        android:id="@+id/translatedLang"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/translatedText"
+        android:gravity="left"
+        android:text="TextView"
+        tools:textAlignment="gravity"
+        android:layout_toEndOf="@+id/translateIcon"
+        android:layout_toRightOf="@+id/translateIcon" />
+
+    <ImageView
+        android:id="@+id/translateIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/translateLang"
+        android:layout_below="@+id/translatedText"
+        android:layout_centerHorizontal="true"
+        android:longClickable="true"
+        app:srcCompat="@mipmap/ic_launcher" />
+
+</RelativeLayout>

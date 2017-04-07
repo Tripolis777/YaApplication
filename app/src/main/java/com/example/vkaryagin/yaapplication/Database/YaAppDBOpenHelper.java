@@ -4,8 +4,6 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.example.vkaryagin.yaapplication.Database.Schema.FavoriteTranslate;
-
 /**
  * Created by tripo on 4/3/2017.
  */

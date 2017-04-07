@@ -1,9 +1,7 @@
 package com.example.vkaryagin.yaapplication.Fragments;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -16,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -26,13 +25,8 @@ import com.example.vkaryagin.yaapplication.Core.Languages;
 import com.example.vkaryagin.yaapplication.Core.Translate;
 import com.example.vkaryagin.yaapplication.Core.YaTranslateManager;
 import com.example.vkaryagin.yaapplication.Core.YaTranslateTask;
+import com.example.vkaryagin.yaapplication.Database.FavoriteTranslate;
 import com.example.vkaryagin.yaapplication.R;
-
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
-
 
 /**
  * Created by tripo on 3/19/2017.
@@ -63,7 +57,6 @@ public class TranslateFragment extends Fragment {
     private boolean autoDetect;
 
     private Context context;
-    //private YaTranslateManager translateManager;
 
     public TranslateFragment() {
     }
@@ -230,6 +223,7 @@ public class TranslateFragment extends Fragment {
 
                         @Override
                         public void error(final YaTranslateTask.Response res) {
+                            Log.e("TRANSLATE", "Cant translate text. " + res.toString());
                             Toast.makeText(context, "Cant translate text. " + res.toString(), Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -241,7 +235,29 @@ public class TranslateFragment extends Fragment {
 
         @Override
         public void onClick(View view) {
+            String translateText = TranslateFragment.this.translateText.getText().toString();
+            if (translateText.isEmpty()) { error("Translate text is empty!"); return; }
 
+            ListAdapter adapter = translateList.getAdapter();
+            if (adapter == null || adapter.isEmpty()) { error("Adapter didn't init or empty!"); return; }
+            String translatedText = (String) adapter.getItem(0);
+
+            if (languagesAdapter.isEmpty()) return;
+            Languages.Language translateLang = (Languages.Language)
+                    fromLanguageSpinner.getSelectedItem();
+            Languages.Language translatedLang = (Languages.Language)
+                    toLanguageSpinner.getSelectedItem();
+            if (translateLang == null || translatedLang == null) { error("Language is not initialize!"); return;}
+
+            FavoriteTranslate favoriteTranslate = new FavoriteTranslate(TranslateFragment.this.getContext());
+            favoriteTranslate.insert(translateText, translatedText, translateLang.getLanguageName(),
+                    translatedLang.getLanguageName(), translateLang.getLanguageCode(), translatedLang.getLanguageCode());
+        }
+
+        private void error (String errorMsg) {
+            //if (!BuildConfig.DEBUG) return;
+            Log.e("FAVORITE BUTTON", errorMsg);
+            Toast.makeText(TranslateFragment.this.getContext(), errorMsg, Toast.LENGTH_LONG).show();
         }
     }
 }
