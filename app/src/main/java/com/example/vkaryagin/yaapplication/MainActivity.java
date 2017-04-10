@@ -1,6 +1,7 @@
 package com.example.vkaryagin.yaapplication;
 
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -9,6 +10,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,6 +21,10 @@ import android.widget.TextView;
 
 import com.example.vkaryagin.yaapplication.Fragments.FavoriteFragment;
 import com.example.vkaryagin.yaapplication.Fragments.TranslateFragment;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -36,11 +42,14 @@ public class MainActivity extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+    private Bundle savedState;
     private final int[] toolbarIconsIds = {R.drawable.ic_toolbar_main, R.drawable.ic_toolbar_favorite};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        savedState = savedInstanceState != null ? savedInstanceState : new Bundle();
+
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -61,6 +70,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.e("MAIN ACTIVITY", "Save Instance State START!");
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -125,8 +140,11 @@ public class MainActivity extends AppCompatActivity {
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
+        private HashMap<Integer, Bundle> fragmentStates;
+
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
+            fragmentStates = new HashMap<>();
         }
 
         @Override
@@ -134,11 +152,17 @@ public class MainActivity extends AppCompatActivity {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
 
+            Bundle state = fragmentStates.get(position);
+            if (state == null) {
+                state = new Bundle();
+                fragmentStates.put(position, state);
+            }
+
             switch (position) {
                 case 0:
-                    return TranslateFragment.newInstance(position + 1);
+                    return TranslateFragment.newInstance(state);
                 case 1:
-                    return FavoriteFragment.newInstance(position + 1);
+                    return FavoriteFragment.newInstance(state);
             }
 
             return PlaceholderFragment.newInstance(position + 1);

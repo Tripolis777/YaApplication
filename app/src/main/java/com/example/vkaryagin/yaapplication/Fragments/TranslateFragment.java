@@ -28,7 +28,6 @@ import com.example.vkaryagin.yaapplication.Core.YaTranslateTask;
 import com.example.vkaryagin.yaapplication.Database.FavoriteTranslate;
 import com.example.vkaryagin.yaapplication.R;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -38,13 +37,14 @@ import java.util.ArrayList;
 //TODO: Cache
 //TODO: Refactoring
 
-public class TranslateFragment extends Fragment {
+public class TranslateFragment extends Fragment implements Commutable {
 
     /**
      * The fragment argument representing the section number for this
      * fragment.
      */
-    private static final String ARG_SECTION_NUMBER = "section_number";
+    public static final String NAME = "favorite_fragment";
+
     private static final String ARG_TRANSLATE_TEXT = "translate_text";
     private static final String ARG_TRANSLATE_LANG = "translate_lang";
     private static final String ARG_TRANSLATED_LANG = "translated_lang";
@@ -62,6 +62,7 @@ public class TranslateFragment extends Fragment {
     private boolean autoDetect;
 
     private Context context;
+    private Bundle state;
 
     public TranslateFragment() {
     }
@@ -70,13 +71,15 @@ public class TranslateFragment extends Fragment {
      * Returns a new instance of this fragment for the given section
      * number.
      */
-    public static TranslateFragment newInstance(int sectionNumber) {
+    public static TranslateFragment newInstance(Bundle state) {
         TranslateFragment fragment = new TranslateFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-        fragment.setArguments(args);
-        Log.d("Fragments", "newInstance");
+        fragment.setArguments(state);
         return fragment;
+    }
+
+    @Override
+    public void setArguments(Bundle state) {
+        this.state = state;
     }
 
     @Override
@@ -101,10 +104,10 @@ public class TranslateFragment extends Fragment {
         toLanguageSpinner = (Spinner) rootView.findViewById(R.id.toLanguageSpinner);
         fromLanguageSpinner = (Spinner) rootView.findViewById(R.id.fromLanguageSpinner);
 
-        if (savedInstanceState != null) {
-            translateText.setText(savedInstanceState.getString(ARG_TRANSLATE_TEXT));
-            Log.d("onCreate", "Bundle state. Translated_tetx" + savedInstanceState.getStringArray(ARG_TRANSLATED_TEXT).toString());
-            translatedAdapter.addAll(savedInstanceState.getStringArray(ARG_TRANSLATED_TEXT));
+        if (state != null && !state.isEmpty()) {
+            translateText.setText(state.getString(ARG_TRANSLATE_TEXT));
+            Log.d("onCreate", "Bundle state. Translated_tetx" + state.getStringArrayList(ARG_TRANSLATED_TEXT).toString());
+            translatedAdapter.addAll(state.getStringArrayList(ARG_TRANSLATED_TEXT));
             translatedAdapter.notifyDataSetChanged();
         } else {
             Log.w("onCreate", "savedInstanceState is nullable.");
@@ -152,12 +155,13 @@ public class TranslateFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(ARG_TRANSLATE_TEXT, translateText.getText().toString());
-        outState.putString(ARG_TRANSLATE_LANG,((Languages.Language)
+        Log.w("SaveInstanceState", "Put into ourState data!");
+        state.putString(ARG_TRANSLATE_TEXT, translateText.getText().toString());
+        state.putString(ARG_TRANSLATE_LANG,((Languages.Language)
                 fromLanguageSpinner.getSelectedItem()).getLanguageCode());
-        outState.putString(ARG_TRANSLATED_LANG,((Languages.Language)
+        state.putString(ARG_TRANSLATED_LANG,((Languages.Language)
                 toLanguageSpinner.getSelectedItem()).getLanguageCode());
-        outState.putStringArray(ARG_TRANSLATED_TEXT, getArguments().getStringArray(ARG_TRANSLATED_TEXT));
+        //state.putStringArray(ARG_TRANSLATED_TEXT, getArguments().getStringArray(ARG_TRANSLATED_TEXT));
     }
 
     public void initSpinnersAdapter(Languages langs) {
@@ -182,6 +186,11 @@ public class TranslateFragment extends Fragment {
     }
     public void setOutputLanguage(int langNumber) {
         toLanguageSpinner.setSelection(langNumber);
+    }
+
+    @Override
+    public void commutateState(Bundle state) {
+
     }
 
     private class OnChangeTranslateText implements TextWatcher {
@@ -258,7 +267,7 @@ public class TranslateFragment extends Fragment {
                             translatedAdapter.addAll(value.getTranslatedText());
                             translatedAdapter.notifyDataSetChanged();
 
-                            getArguments().putStringArrayList(ARG_TRANSLATED_TEXT,
+                            state.putStringArrayList(ARG_TRANSLATED_TEXT,
                                     (ArrayList<String>) value.getTranslatedText());
                         }
 

@@ -9,14 +9,13 @@ import java.util.HashMap;
  */
 
 public class FragmentsCommutator {
-
-    private HashMap<Integer, Fragment> fragmentsMap;
-
+    private HashMap<String, Commutable> fragmentHashMap;
 
     public FragmentsCommutator () {}
 
-    public void addFragment(int id, Fragment fragment) {
-
+    public void addFragment(String name, Commutable fragment) {
+        fragmentHashMap.put(name, fragment);
     }
 
+ //   public void commutate()
 }

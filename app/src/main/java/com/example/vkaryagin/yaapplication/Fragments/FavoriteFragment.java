@@ -2,11 +2,14 @@ package com.example.vkaryagin.yaapplication.Fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import com.example.vkaryagin.yaapplication.Core.Callable;
+import com.example.vkaryagin.yaapplication.Core.YaTranslateTask;
 import com.example.vkaryagin.yaapplication.Database.FavoriteTranslate;
 import com.example.vkaryagin.yaapplication.Database.Schema.FavoriteTranslateEntry;
 import com.example.vkaryagin.yaapplication.R;
@@ -39,11 +42,10 @@ public class FavoriteFragment extends Fragment {
      * Returns a new instance of this fragment for the given section
      * number.
      */
-    public static FavoriteFragment newInstance(int sectionNumber) {
+    public static FavoriteFragment newInstance(Bundle state) {
         FavoriteFragment fragment = new FavoriteFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-        fragment.setArguments(args);
+        fragment.setArguments(state);
+        Log.d("Favorite Fragment", "Create new instance!");
         return fragment;
     }
 
