@@ -28,13 +28,13 @@ import com.example.vkaryagin.yaapplication.Core.YaTranslateTask;
 import com.example.vkaryagin.yaapplication.Database.FavoriteTranslate;
 import com.example.vkaryagin.yaapplication.R;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+
 /**
  * Created by tripo on 3/19/2017.
  */
 
-//TODO: Вывод перевода
-//TODO: Автовыбор языка приложения (системы?) для вводы переводимого текста
-//TODO: Английский - как дефолтный язык перевода
 //TODO: Cache
 //TODO: Refactoring
 
@@ -45,6 +45,10 @@ public class TranslateFragment extends Fragment {
      * fragment.
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
+    private static final String ARG_TRANSLATE_TEXT = "translate_text";
+    private static final String ARG_TRANSLATE_LANG = "translate_lang";
+    private static final String ARG_TRANSLATED_LANG = "translated_lang";
+    private static final String ARG_TRANSLATED_TEXT = "translated_text";
 
     private EditText translateText;
     private ListView translateList;
@@ -54,6 +58,7 @@ public class TranslateFragment extends Fragment {
     private Spinner fromLanguageSpinner;
 
     private ArrayAdapter<Languages.Language> languagesAdapter;
+    private ArrayAdapter<String> translatedAdapter;
     private boolean autoDetect;
 
     private Context context;
@@ -70,6 +75,7 @@ public class TranslateFragment extends Fragment {
         Bundle args = new Bundle();
         args.putInt(ARG_SECTION_NUMBER, sectionNumber);
         fragment.setArguments(args);
+        Log.d("Fragments", "newInstance");
         return fragment;
     }
 
@@ -83,6 +89,7 @@ public class TranslateFragment extends Fragment {
 
         languagesAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item);
         languagesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        translatedAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1);
 
         autoDetect = false;
 
@@ -94,8 +101,18 @@ public class TranslateFragment extends Fragment {
         toLanguageSpinner = (Spinner) rootView.findViewById(R.id.toLanguageSpinner);
         fromLanguageSpinner = (Spinner) rootView.findViewById(R.id.fromLanguageSpinner);
 
+        if (savedInstanceState != null) {
+            translateText.setText(savedInstanceState.getString(ARG_TRANSLATE_TEXT));
+            Log.d("onCreate", "Bundle state. Translated_tetx" + savedInstanceState.getStringArray(ARG_TRANSLATED_TEXT).toString());
+            translatedAdapter.addAll(savedInstanceState.getStringArray(ARG_TRANSLATED_TEXT));
+            translatedAdapter.notifyDataSetChanged();
+        } else {
+            Log.w("onCreate", "savedInstanceState is nullable.");
+        }
+
         toLanguageSpinner.setAdapter(languagesAdapter);
         fromLanguageSpinner.setAdapter(languagesAdapter);
+        translateList.setAdapter(translatedAdapter);
 
         translateButton.setOnClickListener(new OnClickTranslateButtonListener());
         translateText.addTextChangedListener(new OnChangeTranslateText());
@@ -132,10 +149,32 @@ public class TranslateFragment extends Fragment {
         return rootView;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(ARG_TRANSLATE_TEXT, translateText.getText().toString());
+        outState.putString(ARG_TRANSLATE_LANG,((Languages.Language)
+                fromLanguageSpinner.getSelectedItem()).getLanguageCode());
+        outState.putString(ARG_TRANSLATED_LANG,((Languages.Language)
+                toLanguageSpinner.getSelectedItem()).getLanguageCode());
+        outState.putStringArray(ARG_TRANSLATED_TEXT, getArguments().getStringArray(ARG_TRANSLATED_TEXT));
+    }
+
     public void initSpinnersAdapter(Languages langs) {
         if (!languagesAdapter.isEmpty()) languagesAdapter.clear();
         languagesAdapter.addAll(langs.getLanguages());
         languagesAdapter.notifyDataSetChanged();
+
+        // Restore data if exists
+        Bundle args = getArguments();
+        if (args != null) {
+            String translateLang = args.getString(ARG_TRANSLATE_LANG);
+            if (translateLang != null && !translateLang.isEmpty())
+                fromLanguageSpinner.setSelection(langs.getLanguageNumber(translateLang));
+            String translatedLang = args.getString(ARG_TRANSLATED_LANG);
+            if (translatedLang != null && !translatedLang.isEmpty())
+                toLanguageSpinner.setSelection(langs.getLanguageNumber(translatedLang));
+        }
     }
 
     public void setInputLanguage(int langNumber) {
@@ -215,10 +254,12 @@ public class TranslateFragment extends Fragment {
                         public void done(Translate value) {
                             if (value.checkResponseCode()) return;
 
-                            ArrayAdapter<String> translatedAdapter = new ArrayAdapter<String>(context,
-                                    android.R.layout.simple_list_item_1, value.getTranslatedText());
+                            translatedAdapter.clear();
+                            translatedAdapter.addAll(value.getTranslatedText());
+                            translatedAdapter.notifyDataSetChanged();
 
-                            translateList.setAdapter(translatedAdapter);
+                            getArguments().putStringArrayList(ARG_TRANSLATED_TEXT,
+                                    (ArrayList<String>) value.getTranslatedText());
                         }
 
                         @Override

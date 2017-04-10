@@ -18,8 +18,6 @@ import java.util.ArrayList;
  * Created by tripo on 3/19/2017.
  */
 
-//TODO: Пока сказать нечего, надо хоть что-то написать
-
 public class FavoriteFragment extends Fragment {
 
     /**
@@ -27,9 +25,10 @@ public class FavoriteFragment extends Fragment {
      * fragment.
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
+    private static final String ARG_FAVORITE_LIST = "favorite_list";
 
 
-    private ListView favoriteList;
+    private ListView favoriteListView;
     private FavoriteListAdapter favoriteAdapter;
     private ArrayList<FavoriteTranslateEntry> favorites;
 
@@ -53,16 +52,26 @@ public class FavoriteFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_favorite, container, false);
 
-        FavoriteTranslate favoriteTranslate = new FavoriteTranslate(this.getContext());
-        favorites = (ArrayList) favoriteTranslate.getAll();
+        if (savedInstanceState == null) {
+            FavoriteTranslate favoriteTranslate = new FavoriteTranslate(this.getContext());
+            favorites = (ArrayList) favoriteTranslate.getAll();
+        } else {
+            favorites = (ArrayList) savedInstanceState.getSerializable(ARG_FAVORITE_LIST);
+        }
+
         favoriteAdapter = new FavoriteListAdapter(this.getContext(), favorites);
 
-        favoriteList = (ListView) rootView.findViewById(R.id.favoroteList);
-        favoriteList.setAdapter(favoriteAdapter);
+        favoriteListView = (ListView) rootView.findViewById(R.id.favoroteList);
+        favoriteListView.setAdapter(favoriteAdapter);
 
         return rootView;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(ARG_FAVORITE_LIST, favorites);
+    }
 //    public void addFavorite(String translateText, String translatedText, String translateLang,
 //                                String translatedLang) {
 //        favorites.add(0, new FavoriteTranslateEntry(-1, translateText, translatedText, translateLang,

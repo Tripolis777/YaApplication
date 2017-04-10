@@ -1,12 +1,16 @@
 package com.example.vkaryagin.yaapplication.Database.Schema;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.provider.BaseColumns;
+
+import java.io.Serializable;
 
 /**
  * Created by v.karyagin on 07.04.2017.
  */
 
-public class FavoriteTranslateEntry implements BaseColumns {
+public class FavoriteTranslateEntry implements BaseColumns{
     public static final String TABLE_NAME = "favorites";
 
     public static final String COLUMN_NAME_TRANSLATE_TEXT = "translate_text";
