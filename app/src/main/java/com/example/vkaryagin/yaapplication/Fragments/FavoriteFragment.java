@@ -1,15 +1,13 @@
 package com.example.vkaryagin.yaapplication.Fragments;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.example.vkaryagin.yaapplication.Core.Callable;
-import com.example.vkaryagin.yaapplication.Core.YaTranslateTask;
 import com.example.vkaryagin.yaapplication.Database.FavoriteTranslate;
 import com.example.vkaryagin.yaapplication.Database.Schema.FavoriteTranslateEntry;
 import com.example.vkaryagin.yaapplication.R;
@@ -62,22 +60,25 @@ public class FavoriteFragment extends BaseFragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_favorite, container, false);
         Log.e("FavotiteFragment", "onCreateView");
-        //if (savedInstanceState == null) {
-            FavoriteTranslate favoriteTranslate = new FavoriteTranslate(this.getContext());
-            favorites = (ArrayList) favoriteTranslate.getAll();
-        //} else {
-        //    favorites = (ArrayList) savedInstanceState.getSerializable(ARG_FAVORITE_LIST);
-        //}
+        FavoriteTranslate favoriteTranslate = new FavoriteTranslate(this.getContext());
+        favorites = (ArrayList) favoriteTranslate.getAll();
 
         favoriteAdapter = new FavoriteListAdapter(this.getContext(), favorites);
 
         favoriteListView = (ListView) rootView.findViewById(R.id.favoroteList);
         favoriteListView.setAdapter(favoriteAdapter);
 
-        this.checkMessageQueue();
+        //this.checkMessageQueue();
         return rootView;
     }
 
+    @Override
+    public void setUserVisibleHint(boolean isVisibleHint) {
+        super.setUserVisibleHint(isVisibleHint);
+        Log.e("FavoriteFragment", "[setUserVisibleHint] set is to " + isVisibleHint);
+        if (isVisibleHint)
+            checkMessageQueue();
+    }
 //    @Override
 //    public void onSaveInstanceState(Bundle outState) {
 //        super.onSaveInstanceState(outState);
@@ -88,12 +89,18 @@ public class FavoriteFragment extends BaseFragment {
     //TODO: надо попробовать передать всё одним объектом Translate чтобы вытянуть языки и создать полноценный объект FavoriteTranslateEntry
     @Override
     public void checkMessageQueue() {
+        Log.d("FavoriteFragment", "[checkMessageQueue] START");
         FragmentsCommutator fragmentsCommutator = FragmentsCommutator.getInstance();
         Stack<Bundle> data = fragmentsCommutator.getData(TAG);
         if (data == null || data.isEmpty()) return;
 
+        Log.i("FavoriteFragment", "[checkMessageQueue] data size: " + data.size());
+
+        ArrayList<FavoriteTranslateEntry> newRecs = new ArrayList<>();
         for(Bundle msg : data) {
             Bundle favoriteRecord = msg.getBundle(COMMUNICATE_FAVORITE_KEY);
+            Log.d("FavoriteFragment", "checkMassageQueue favoriteRecord is " + (
+                    favoriteRecord == null ? "null" : "init") + "!");
             if (favoriteRecord == null) continue;
 
             FavoriteTranslateEntry rec = new FavoriteTranslateEntry();
@@ -102,7 +109,16 @@ public class FavoriteFragment extends BaseFragment {
             rec.translateLang = favoriteRecord.getString(COMMUNICATE_TRANSLATE_LANG);
             rec.translatedLang = favoriteRecord.getString(COMMUNICATE_TRANSLATED_LANG);
 
-            favorites.add(0, rec);
+            newRecs.add(rec);
+        }
+
+        if (favoriteListView != null) {
+            ArrayAdapter adapter = (ArrayAdapter) favoriteListView.getAdapter();
+            Log.d("FavoriteFragment", "[checkMessageQueue] add to list view " + newRecs.size() + " new items!");
+            adapter.addAll(newRecs);
+            adapter.notifyDataSetChanged();
+        } else {
+            favorites.addAll(0, newRecs);
         }
     }
 }

@@ -315,7 +315,7 @@ public class TranslateFragment extends BaseFragment {
         private void sendFavoriteTranslateMsg(String translateText, String translatedText,
                                         Languages.Language translateLang, Languages.Language translatedLang) {
             Bundle msg = new Bundle();
-            msg.putString(FavoriteFragment.COMMUNICATE_TRANSLATE_TEXT, translatedText);
+            msg.putString(FavoriteFragment.COMMUNICATE_TRANSLATE_TEXT, translateText);
             msg.putString(FavoriteFragment.COMMUNICATE_TRANSLATED_TEXT, translatedText);
             msg.putString(FavoriteFragment.COMMUNICATE_TRANSLATE_LANG, translateLang.getLanguageName());
             msg.putString(FavoriteFragment.COMMUNICATE_TRANSLATED_LANG, translatedLang.getLanguageName());

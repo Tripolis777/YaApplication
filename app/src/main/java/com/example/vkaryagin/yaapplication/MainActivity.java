@@ -194,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onPageSelected(int position) {
             Log.e("Main Activity", "onPageSelected position: " + position);
-            ((BaseFragment) mSectionsPagerAdapter.getItem(position)).checkMessageQueue();
+          //  ((BaseFragment) mSectionsPagerAdapter.getItem(position)).checkMessageQueue();
         }
 
         @Override

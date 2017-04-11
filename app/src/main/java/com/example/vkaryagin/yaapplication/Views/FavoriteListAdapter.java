@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.example.vkaryagin.yaapplication.Database.Schema.FavoriteTranslateEntry;
 import com.example.vkaryagin.yaapplication.R;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -45,4 +46,10 @@ public class FavoriteListAdapter extends ArrayAdapter<FavoriteTranslateEntry> {
         return itemView;
     }
 
+
+    @Override
+    public void addAll(Collection collection) {
+        values.addAll(collection);
+        super.addAll(collection);
+    }
 }
