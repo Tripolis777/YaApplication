@@ -16,26 +16,33 @@ import com.example.vkaryagin.yaapplication.R;
 import com.example.vkaryagin.yaapplication.Views.FavoriteListAdapter;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 /**
  * Created by tripo on 3/19/2017.
  */
 
-public class FavoriteFragment extends Fragment {
+public class FavoriteFragment extends BaseFragment {
+
+    public static final String TAG = "favotite_fragment";
+    public static final String COMMUNICATE_FAVORITE_KEY = "add_favorite";
+
+    public static final String COMMUNICATE_TRANSLATE_TEXT = "translate_text";
+    public static final String COMMUNICATE_TRANSLATED_TEXT = "translated_text";
+    public static final String COMMUNICATE_TRANSLATE_LANG = "translate_lang";
+    public static final String COMMUNICATE_TRANSLATED_LANG = "translated_lang";
 
     /**
-     * The fragment argument representing the section number for this
-     * fragment.
+     * Saved instance state arguments
      */
-    private static final String ARG_SECTION_NUMBER = "section_number";
     private static final String ARG_FAVORITE_LIST = "favorite_list";
-
 
     private ListView favoriteListView;
     private FavoriteListAdapter favoriteAdapter;
     private ArrayList<FavoriteTranslateEntry> favorites;
 
     public FavoriteFragment() {
+        favorites = new ArrayList<>();
     }
 
     /**
@@ -45,7 +52,8 @@ public class FavoriteFragment extends Fragment {
     public static FavoriteFragment newInstance(Bundle state) {
         FavoriteFragment fragment = new FavoriteFragment();
         fragment.setArguments(state);
-        Log.d("Favorite Fragment", "Create new instance!");
+        Log.e("Favorite Fragment", "Create new instance!");
+        fragment.checkMessageQueue();
         return fragment;
     }
 
@@ -53,31 +61,48 @@ public class FavoriteFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_favorite, container, false);
-
-        if (savedInstanceState == null) {
+        Log.e("FavotiteFragment", "onCreateView");
+        //if (savedInstanceState == null) {
             FavoriteTranslate favoriteTranslate = new FavoriteTranslate(this.getContext());
             favorites = (ArrayList) favoriteTranslate.getAll();
-        } else {
-            favorites = (ArrayList) savedInstanceState.getSerializable(ARG_FAVORITE_LIST);
-        }
+        //} else {
+        //    favorites = (ArrayList) savedInstanceState.getSerializable(ARG_FAVORITE_LIST);
+        //}
 
         favoriteAdapter = new FavoriteListAdapter(this.getContext(), favorites);
 
         favoriteListView = (ListView) rootView.findViewById(R.id.favoroteList);
         favoriteListView.setAdapter(favoriteAdapter);
 
+        this.checkMessageQueue();
         return rootView;
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putSerializable(ARG_FAVORITE_LIST, favorites);
-    }
-//    public void addFavorite(String translateText, String translatedText, String translateLang,
-//                                String translatedLang) {
-//        favorites.add(0, new FavoriteTranslateEntry(-1, translateText, translatedText, translateLang,
-//                translatedLang, new Date().toString()));
+//    @Override
+//    public void onSaveInstanceState(Bundle outState) {
+//        super.onSaveInstanceState(outState);
+//    //    outState.putSerializable(ARG_FAVORITE_LIST, favorites);
 //    }
 
+
+    //TODO: надо попробовать передать всё одним объектом Translate чтобы вытянуть языки и создать полноценный объект FavoriteTranslateEntry
+    @Override
+    public void checkMessageQueue() {
+        FragmentsCommutator fragmentsCommutator = FragmentsCommutator.getInstance();
+        Stack<Bundle> data = fragmentsCommutator.getData(TAG);
+        if (data == null || data.isEmpty()) return;
+
+        for(Bundle msg : data) {
+            Bundle favoriteRecord = msg.getBundle(COMMUNICATE_FAVORITE_KEY);
+            if (favoriteRecord == null) continue;
+
+            FavoriteTranslateEntry rec = new FavoriteTranslateEntry();
+            rec.translateText = favoriteRecord.getString(COMMUNICATE_TRANSLATE_TEXT);
+            rec.translatedText = favoriteRecord.getString(COMMUNICATE_TRANSLATED_TEXT);
+            rec.translateLang = favoriteRecord.getString(COMMUNICATE_TRANSLATE_LANG);
+            rec.translatedLang = favoriteRecord.getString(COMMUNICATE_TRANSLATED_LANG);
+
+            favorites.add(0, rec);
+        }
+    }
 }

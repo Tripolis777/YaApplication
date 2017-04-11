@@ -19,7 +19,10 @@ import android.view.ViewGroup;
 
 import android.widget.TextView;
 
+import com.example.vkaryagin.yaapplication.Fragments.BaseFragment;
+import com.example.vkaryagin.yaapplication.Fragments.Commutable;
 import com.example.vkaryagin.yaapplication.Fragments.FavoriteFragment;
+import com.example.vkaryagin.yaapplication.Fragments.FragmentsCommutator;
 import com.example.vkaryagin.yaapplication.Fragments.TranslateFragment;
 
 import java.util.ArrayList;
@@ -42,15 +45,16 @@ public class MainActivity extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
-    private Bundle savedState;
+    private FragmentsCommutator fragmentsCommutator;
     private final int[] toolbarIconsIds = {R.drawable.ic_toolbar_main, R.drawable.ic_toolbar_favorite};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        savedState = savedInstanceState != null ? savedInstanceState : new Bundle();
 
         setContentView(R.layout.activity_main);
+
+        fragmentsCommutator = FragmentsCommutator.getInstance();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -62,19 +66,14 @@ public class MainActivity extends AppCompatActivity {
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
+        mViewPager.addOnPageChangeListener(new PageChangeListener());
+
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
         for (int i = 0; i < tabLayout.getTabCount() && i < toolbarIconsIds.length; i++) {
             tabLayout.getTabAt(i).setIcon(toolbarIconsIds[i]);
         }
-    }
-
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        Log.e("MAIN ACTIVITY", "Save Instance State START!");
     }
 
     @Override
@@ -102,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+    public static class PlaceholderFragment extends BaseFragment {
         /**
          * The fragment argument representing the section number for this
          * fragment.
@@ -132,6 +131,9 @@ public class MainActivity extends AppCompatActivity {
             textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
             return rootView;
         }
+
+        @Override
+        public void checkMessageQueue() {}
     }
 
     /**
@@ -151,7 +153,6 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-
             Bundle state = fragmentStates.get(position);
             if (state == null) {
                 state = new Bundle();
@@ -181,6 +182,24 @@ public class MainActivity extends AppCompatActivity {
                     return "OPTIONS";
             }
             return null;
+        }
+    }
+
+    public class PageChangeListener implements ViewPager.OnPageChangeListener {
+
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            Log.e("Main Activity", "onPageSelected position: " + position);
+            ((BaseFragment) mSectionsPagerAdapter.getItem(position)).checkMessageQueue();
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+
         }
     }
 }

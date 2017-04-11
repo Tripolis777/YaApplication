@@ -37,7 +37,7 @@ import java.util.ArrayList;
 //TODO: Cache
 //TODO: Refactoring
 
-public class TranslateFragment extends Fragment implements Commutable {
+public class TranslateFragment extends BaseFragment {
 
     /**
      * The fragment argument representing the section number for this
@@ -73,12 +73,12 @@ public class TranslateFragment extends Fragment implements Commutable {
      */
     public static TranslateFragment newInstance(Bundle state) {
         TranslateFragment fragment = new TranslateFragment();
-        fragment.setArguments(state);
+        fragment.setSavedState(state);
+        Log.e("TraslateFragment", "Instance new!");
         return fragment;
     }
 
-    @Override
-    public void setArguments(Bundle state) {
+    public void setSavedState(Bundle state) {
         this.state = state;
     }
 
@@ -87,7 +87,7 @@ public class TranslateFragment extends Fragment implements Commutable {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_translate, container, false);
         context = this.getContext();
-
+        Log.e("TranslateFragment", "onCreateView");
         YaTranslateManager translateManager = YaTranslateManager.getInstance();
 
         languagesAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item);
@@ -189,7 +189,7 @@ public class TranslateFragment extends Fragment implements Commutable {
     }
 
     @Override
-    public void commutateState(Bundle state) {
+    public void checkMessageQueue() {
 
     }
 
@@ -302,12 +302,27 @@ public class TranslateFragment extends Fragment implements Commutable {
             FavoriteTranslate favoriteTranslate = new FavoriteTranslate(TranslateFragment.this.getContext());
             favoriteTranslate.insert(translateText, translatedText, translateLang.getLanguageName(),
                     translatedLang.getLanguageName(), translateLang.getLanguageCode(), translatedLang.getLanguageCode());
+
+            sendFavoriteTranslateMsg(translateText, translatedText, translateLang, translatedLang);
         }
 
         private void error (String errorMsg) {
             //if (!BuildConfig.DEBUG) return;
             Log.e("FAVORITE BUTTON", errorMsg);
             Toast.makeText(TranslateFragment.this.getContext(), errorMsg, Toast.LENGTH_LONG).show();
+        }
+
+        private void sendFavoriteTranslateMsg(String translateText, String translatedText,
+                                        Languages.Language translateLang, Languages.Language translatedLang) {
+            Bundle msg = new Bundle();
+            msg.putString(FavoriteFragment.COMMUNICATE_TRANSLATE_TEXT, translatedText);
+            msg.putString(FavoriteFragment.COMMUNICATE_TRANSLATED_TEXT, translatedText);
+            msg.putString(FavoriteFragment.COMMUNICATE_TRANSLATE_LANG, translateLang.getLanguageName());
+            msg.putString(FavoriteFragment.COMMUNICATE_TRANSLATED_LANG, translatedLang.getLanguageName());
+
+            Bundle data = new Bundle();
+            data.putBundle(FavoriteFragment.COMMUNICATE_FAVORITE_KEY, msg);
+            FragmentsCommutator.getInstance().addData(FavoriteFragment.TAG, data);
         }
     }
 }
