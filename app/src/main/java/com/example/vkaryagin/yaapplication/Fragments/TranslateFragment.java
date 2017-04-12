@@ -302,7 +302,7 @@ public class TranslateFragment extends BaseFragment {
             FavoriteTranslate favoriteTranslate = new FavoriteTranslate(TranslateFragment.this.getContext());
             favoriteTranslate.insert(translateText, translatedText, translateLang.getLanguageName(),
                     translatedLang.getLanguageName(), translateLang.getLanguageCode(), translatedLang.getLanguageCode());
-
+            // TODO: translateText may be not equal translated
             sendFavoriteTranslateMsg(translateText, translatedText, translateLang, translatedLang);
         }
 

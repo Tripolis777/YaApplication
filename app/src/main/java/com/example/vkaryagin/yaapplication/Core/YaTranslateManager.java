@@ -50,7 +50,7 @@ public class YaTranslateManager {
         //Some cache code
         if (!this.checkNetwork(context)) return;
 
-        YaTranslateTask<Translate> getTranslateTask = new YaTranslateTask<>(new Translate(), callback);
+        YaTranslateTask<Translate> getTranslateTask = new YaTranslateTask<>(new Translate(params.getText()), callback);
         getTranslateTask.execute(YandexHttpApi.getTranslateLink(context, params));
     }
 

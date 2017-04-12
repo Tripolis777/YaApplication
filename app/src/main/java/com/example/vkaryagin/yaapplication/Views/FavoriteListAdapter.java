@@ -52,4 +52,8 @@ public class FavoriteListAdapter extends ArrayAdapter<FavoriteTranslateEntry> {
         values.addAll(collection);
         super.addAll(collection);
     }
+
+    public void addToFirstAll(Collection collection) {
+        values.addAll(0, collection);
+    }
 }

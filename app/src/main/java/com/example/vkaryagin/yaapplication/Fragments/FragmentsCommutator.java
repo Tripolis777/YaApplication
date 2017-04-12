@@ -1,17 +1,17 @@
 package com.example.vkaryagin.yaapplication.Fragments;
 
-import android.content.ContentValues;
 import android.os.Bundle;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Stack;
+import java.util.List;
 
 /**
  * Created by v.karyagin on 07.04.2017.
  */
 
 public class FragmentsCommutator {
-    private static HashMap<String, Stack<Bundle>> fragmentHashMap;
+    private static HashMap<String, List<Bundle>> fragmentHashMap;
     private static FragmentsCommutator instance;
 
     public static FragmentsCommutator getInstance() {
@@ -26,15 +26,15 @@ public class FragmentsCommutator {
     }
 
     public void addData(String name, Bundle data) {
-        Stack<Bundle> queue = fragmentHashMap.get(name);
+        List<Bundle> queue = fragmentHashMap.get(name);
         if (queue == null) {
-            queue = new Stack<>();
+            queue = new ArrayList<>();
             fragmentHashMap.put(name, queue);
         }
-        queue.add(data);
+        queue.add(0, data);
     }
 
-    public Stack<Bundle> getData(String name) {
+    public List<Bundle> getData(String name) {
          return fragmentHashMap.remove(name);
     }
 }

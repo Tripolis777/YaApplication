@@ -15,12 +15,14 @@ import java.util.List;
 
 public class Translate implements Initiable {
 
-    private List<String> text;
+    private List<String> translatedTexts;
     private int responseCode;
     private String language;
+    private final String translateText;
 
-    public Translate() {
-        text = new ArrayList<>();
+    public Translate(String translateText) {
+        this.translateText = translateText;
+        translatedTexts = new ArrayList<>();
         responseCode = -1;
     }
 
@@ -41,7 +43,7 @@ public class Translate implements Initiable {
 
             JSONArray translateVariants = res.getJSONArray("text");
             for(int i = 0; i < translateVariants.length(); i++)
-                text.add(translateVariants.getString(i));
+                translatedTexts.add(translateVariants.getString(i));
 
             language = res.getString("lang");
         } catch(JSONException e) {
@@ -50,9 +52,10 @@ public class Translate implements Initiable {
         }
     }
 
-    public List<String> getTranslatedText() { return text; }
+    public List<String> getTranslatedTexts() { return translatedTexts; }
+    public String getTranslateText() { return translateText; }
 
-    public boolean isEmpty() { return text.isEmpty(); }
+    public boolean isEmpty() { return translatedTexts.isEmpty(); }
 
     public boolean checkResponseCode() {   // TODO: future checkResponseCode(Context context) for alert messages
         return responseCode != 200;

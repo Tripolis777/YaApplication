@@ -51,9 +51,20 @@ public class FavoriteFragment extends BaseFragment {
         FavoriteFragment fragment = new FavoriteFragment();
         fragment.setArguments(state);
         Log.e("Favorite Fragment", "Create new instance!");
-        fragment.checkMessageQueue();
         return fragment;
     }
+
+//    public static void sendTranslateRecord(FavoriteTranslateEntry rec) {
+//        Bundle msg = new Bundle();
+//        msg.putString(FavoriteFragment.COMMUNICATE_TRANSLATE_TEXT, translateText);
+//        msg.putString(FavoriteFragment.COMMUNICATE_TRANSLATED_TEXT, translatedText);
+//        msg.putString(FavoriteFragment.COMMUNICATE_TRANSLATE_LANG, translateLang.getLanguageName());
+//        msg.putString(FavoriteFragment.COMMUNICATE_TRANSLATED_LANG, translatedLang.getLanguageName());
+//
+//        Bundle data = new Bundle();
+//        data.putBundle(FavoriteFragment.COMMUNICATE_FAVORITE_KEY, msg);
+//        FragmentsCommutator.getInstance().addData(FavoriteFragment.TAG, data);
+//    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -68,7 +79,6 @@ public class FavoriteFragment extends BaseFragment {
         favoriteListView = (ListView) rootView.findViewById(R.id.favoroteList);
         favoriteListView.setAdapter(favoriteAdapter);
 
-        //this.checkMessageQueue();
         return rootView;
     }
 
@@ -79,11 +89,6 @@ public class FavoriteFragment extends BaseFragment {
         if (isVisibleHint)
             checkMessageQueue();
     }
-//    @Override
-//    public void onSaveInstanceState(Bundle outState) {
-//        super.onSaveInstanceState(outState);
-//    //    outState.putSerializable(ARG_FAVORITE_LIST, favorites);
-//    }
 
 
     //TODO: надо попробовать передать всё одним объектом Translate чтобы вытянуть языки и создать полноценный объект FavoriteTranslateEntry
@@ -91,7 +96,7 @@ public class FavoriteFragment extends BaseFragment {
     public void checkMessageQueue() {
         Log.d("FavoriteFragment", "[checkMessageQueue] START");
         FragmentsCommutator fragmentsCommutator = FragmentsCommutator.getInstance();
-        Stack<Bundle> data = fragmentsCommutator.getData(TAG);
+        ArrayList<Bundle> data = (ArrayList) fragmentsCommutator.getData(TAG);
         if (data == null || data.isEmpty()) return;
 
         Log.i("FavoriteFragment", "[checkMessageQueue] data size: " + data.size());
@@ -113,9 +118,9 @@ public class FavoriteFragment extends BaseFragment {
         }
 
         if (favoriteListView != null) {
-            ArrayAdapter adapter = (ArrayAdapter) favoriteListView.getAdapter();
+            FavoriteListAdapter adapter = (FavoriteListAdapter) favoriteListView.getAdapter();
             Log.d("FavoriteFragment", "[checkMessageQueue] add to list view " + newRecs.size() + " new items!");
-            adapter.addAll(newRecs);
+            adapter.addToFirstAll(newRecs);
             adapter.notifyDataSetChanged();
         } else {
             favorites.addAll(0, newRecs);
