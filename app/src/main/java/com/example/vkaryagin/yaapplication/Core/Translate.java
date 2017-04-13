@@ -1,11 +1,13 @@
 package com.example.vkaryagin.yaapplication.Core;
 
+import android.os.Parcelable;
 import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,21 +15,20 @@ import java.util.List;
  * Created by tripo on 3/27/2017.
  */
 
-public class Translate implements Initiable {
+public class Translate implements Initiable, Serializable {
 
     private List<String> translatedTexts;
     private int responseCode;
     private String language;
-    private final String translateText;
+    private final Params requestParams;
 
-    public Translate(String translateText) {
-        this.translateText = translateText;
+    public Translate(Params requestParams) {
+        this.requestParams = requestParams;
         translatedTexts = new ArrayList<>();
         responseCode = -1;
     }
 
     public void init(String jsonString) {
-
         /** Request Example
          "code": 200,
          "lang": "en-ru",
@@ -53,7 +54,7 @@ public class Translate implements Initiable {
     }
 
     public List<String> getTranslatedTexts() { return translatedTexts; }
-    public String getTranslateText() { return translateText; }
+    public String getTranslateText() { return requestParams.getText(); }
 
     public boolean isEmpty() { return translatedTexts.isEmpty(); }
 
@@ -68,19 +69,10 @@ public class Translate implements Initiable {
         private String options;
 
         public Params(String text, String languageIn, String languageOut) {
-            this._setText(text);
+            this.text = text;
             this._setLanguage(languageIn, languageOut);
             this.format = new String();
             this.options = new String();
-        }
-
-        private void _setText(String text) {
-//            try {
-//                this.text = URLEncoder.encode(text, "UTF-8");
-//            } catch (UnsupportedEncodingException e) {
-//                e.printStackTrace();
-//            }
-            this.text = text;
         }
 
         private void _setLanguage(String langIn, String langOut) {
@@ -88,7 +80,7 @@ public class Translate implements Initiable {
         }
 
         public Params setText(String text) {
-            this._setText(text);
+            this.text = text;
             return this;
         }
 

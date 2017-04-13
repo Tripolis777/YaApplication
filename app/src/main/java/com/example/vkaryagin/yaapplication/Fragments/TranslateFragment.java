@@ -2,7 +2,6 @@ package com.example.vkaryagin.yaapplication.Fragments;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -27,8 +26,7 @@ import com.example.vkaryagin.yaapplication.Core.YaTranslateManager;
 import com.example.vkaryagin.yaapplication.Core.YaTranslateTask;
 import com.example.vkaryagin.yaapplication.Database.FavoriteTranslate;
 import com.example.vkaryagin.yaapplication.R;
-
-import java.util.ArrayList;
+import com.example.vkaryagin.yaapplication.Views.TranslateListAdapter;
 
 /**
  * Created by tripo on 3/19/2017.
@@ -36,6 +34,7 @@ import java.util.ArrayList;
 
 //TODO: Cache
 //TODO: Refactoring
+//TODO: перенести все ошибки в константы  и сделать обработчик по response code
 
 public class TranslateFragment extends BaseFragment {
 
@@ -58,7 +57,7 @@ public class TranslateFragment extends BaseFragment {
     private Spinner fromLanguageSpinner;
 
     private ArrayAdapter<Languages.Language> languagesAdapter;
-    private ArrayAdapter<String> translatedAdapter;
+    private TranslateListAdapter translatedAdapter;
     private boolean autoDetect;
 
     private Context context;
@@ -68,8 +67,11 @@ public class TranslateFragment extends BaseFragment {
     }
 
     /**
-     * Returns a new instance of this fragment for the given section
-     * number.
+     * Create a new instance of a TranslateFragment with the given data state.
+     *
+     * @param state Bundle of arguments to supply to the fragment, which it
+     * can retrieve with {@link #setSavedState(Bundle)} ()}.  May be null.
+     * @return Returns a new fragment instance.
      */
     public static TranslateFragment newInstance(Bundle state) {
         TranslateFragment fragment = new TranslateFragment();
@@ -78,6 +80,12 @@ public class TranslateFragment extends BaseFragment {
         return fragment;
     }
 
+    /**
+     * Set savedState this object. Like {@link #setArguments(Bundle)}
+     *
+     * @param state Bundle of data, that set to object's fields
+     * {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
+     */
     public void setSavedState(Bundle state) {
         this.state = state;
     }
@@ -92,7 +100,7 @@ public class TranslateFragment extends BaseFragment {
 
         languagesAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item);
         languagesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        translatedAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1);
+        translatedAdapter = new TranslateListAdapter(context);
 
         autoDetect = false;
 
@@ -106,11 +114,11 @@ public class TranslateFragment extends BaseFragment {
 
         if (state != null && !state.isEmpty()) {
             translateText.setText(state.getString(ARG_TRANSLATE_TEXT));
-            Log.d("onCreate", "Bundle state. Translated_tetx" + state.getStringArrayList(ARG_TRANSLATED_TEXT).toString());
-            translatedAdapter.addAll(state.getStringArrayList(ARG_TRANSLATED_TEXT));
+            Log.d("TranslateFragment", "[onCreate] Bundle state. Translated_text" + state.getSerializable(ARG_TRANSLATED_TEXT).toString());
+            translatedAdapter.setTranslate((Translate) state.getSerializable(ARG_TRANSLATED_TEXT));
             translatedAdapter.notifyDataSetChanged();
         } else {
-            Log.w("onCreate", "savedInstanceState is nullable.");
+            Log.w("TranslateFragment", "[onCreate] savedInstanceState is nullable.");
         }
 
         toLanguageSpinner.setAdapter(languagesAdapter);
@@ -125,7 +133,7 @@ public class TranslateFragment extends BaseFragment {
         fromLanguageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.d("OnItemSelected", String.format("i: %d, l: %d", i, l));
+                Log.d("TranslateFragment", "[OnItemSelected] " + String.format("i: %d, l: %d", i, l));
                 autoDetect = false;
             }
 
@@ -145,25 +153,33 @@ public class TranslateFragment extends BaseFragment {
 
             @Override
             public void error(final YaTranslateTask.Response res) {
-                Toast.makeText(context, "Cant connect to get languages. " + res.toString(), Toast.LENGTH_SHORT).show();
+                Log.e("TranslateFragment", "[LANGUAGES] Cants get languages. Res: " + res.toString());
+                Toast.makeText(context, "Cant get languages.", Toast.LENGTH_SHORT).show();
             }
         });
 
         return rootView;
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        Log.w("SaveInstanceState", "Put into ourState data!");
-        state.putString(ARG_TRANSLATE_TEXT, translateText.getText().toString());
-        state.putString(ARG_TRANSLATE_LANG,((Languages.Language)
-                fromLanguageSpinner.getSelectedItem()).getLanguageCode());
-        state.putString(ARG_TRANSLATED_LANG,((Languages.Language)
-                toLanguageSpinner.getSelectedItem()).getLanguageCode());
-        //state.putStringArray(ARG_TRANSLATED_TEXT, getArguments().getStringArray(ARG_TRANSLATED_TEXT));
-    }
+//    @Override
+//    public void onSaveInstanceState(Bundle outState) {
+//        super.onSaveInstanceState(outState);
+//        Log.w("SaveInstanceState", "Put into ourState data!");
+//        state.putString(ARG_TRANSLATE_TEXT, translateText.getText().toString());
+//        state.putString(ARG_TRANSLATE_LANG,((Languages.Language)
+//                fromLanguageSpinner.getSelectedItem()).getLanguageCode());
+//        state.putString(ARG_TRANSLATED_LANG,((Languages.Language)
+//                toLanguageSpinner.getSelectedItem()).getLanguageCode());
+//        //state.putStringArray(ARG_TRANSLATED_TEXT, getArguments().getStringArray(ARG_TRANSLATED_TEXT));
+//    }
 
+    /**
+     * Initialize {@link #toLanguageSpinner} and {@link #fromLanguageSpinner} spinners
+     * by all available languages
+     *
+     * @param langs Object {@linkplain Languages} that contains {@linkplain java.util.ArrayList} of
+     * {@linkplain com.example.vkaryagin.yaapplication.Core.Languages.Language} objects
+     */
     public void initSpinnersAdapter(Languages langs) {
         if (!languagesAdapter.isEmpty()) languagesAdapter.clear();
         languagesAdapter.addAll(langs.getLanguages());
@@ -181,9 +197,20 @@ public class TranslateFragment extends BaseFragment {
         }
     }
 
+    /**
+     * Set language for {@link #fromLanguageSpinner}
+     *
+     * @param langNumber Language's index in init languages list
+     */
     public void setInputLanguage(int langNumber) {
         fromLanguageSpinner.setSelection(langNumber);
     }
+
+    /**
+     * Set language for {@link #toLanguageSpinner}
+     *
+     * @param langNumber Language's index in init languages list
+     */
     public void setOutputLanguage(int langNumber) {
         toLanguageSpinner.setSelection(langNumber);
     }
@@ -223,16 +250,16 @@ public class TranslateFragment extends BaseFragment {
 
                     @Override
                     public void error(final YaTranslateTask.Response res) {
-                        Toast.makeText(context, "Cont connect to detect language. " + res.toString(), Toast.LENGTH_SHORT).show();
+                        Log.e("TranslateFragment", "[DETECT] Cant connect to detect language. " + res.toString());
+                        Toast.makeText(context, "Cant connect to detect language.", Toast.LENGTH_SHORT).show();
+
                     }
                     });
             }
         }
 
         @Override
-        public void afterTextChanged(final Editable editable) {
-
-        }
+        public void afterTextChanged(final Editable editable) {}
     }
 
     //TODO: Возможно стоит это вынести
@@ -264,17 +291,16 @@ public class TranslateFragment extends BaseFragment {
                             if (value.checkResponseCode()) return;
 
                             translatedAdapter.clear();
-                            translatedAdapter.addAll(value.getTranslatedText());
+                            translatedAdapter.setTranslate(value);
                             translatedAdapter.notifyDataSetChanged();
 
-                            state.putStringArrayList(ARG_TRANSLATED_TEXT,
-                                    (ArrayList<String>) value.getTranslatedText());
+                            state.putSerializable(ARG_TRANSLATED_TEXT, value);
                         }
 
                         @Override
                         public void error(final YaTranslateTask.Response res) {
-                            Log.e("TRANSLATE", "Cant translate text. " + res.toString());
-                            Toast.makeText(context, "Cant translate text. " + res.toString(), Toast.LENGTH_SHORT).show();
+                            Log.e("TranslateFragment",  "[TRANSLATE] Cant translate text. " + res.toString());
+                           Toast.makeText(context, "Cant translate text.", Toast.LENGTH_SHORT).show();
                         }
                     }
             );
@@ -288,9 +314,10 @@ public class TranslateFragment extends BaseFragment {
             String translateText = TranslateFragment.this.translateText.getText().toString();
             if (translateText.isEmpty()) { error("Translate text is empty!"); return; }
 
-            ListAdapter adapter = translateList.getAdapter();
+            TranslateListAdapter adapter = (TranslateListAdapter) translateList.getAdapter();
             if (adapter == null || adapter.isEmpty()) { error("Adapter didn't init or empty!"); return; }
-            String translatedText = (String) adapter.getItem(0);
+            final Translate translate = adapter.getTranslate();
+            String translatedText = translate.getTranslatedTexts().get(0);
 
             if (languagesAdapter.isEmpty()) return;
             Languages.Language translateLang = (Languages.Language)
@@ -307,8 +334,7 @@ public class TranslateFragment extends BaseFragment {
         }
 
         private void error (String errorMsg) {
-            //if (!BuildConfig.DEBUG) return;
-            Log.e("FAVORITE BUTTON", errorMsg);
+            Log.e("TranslateFragment",  "[FAVORITE BUTTON] error: " + errorMsg);
             Toast.makeText(TranslateFragment.this.getContext(), errorMsg, Toast.LENGTH_LONG).show();
         }
 
