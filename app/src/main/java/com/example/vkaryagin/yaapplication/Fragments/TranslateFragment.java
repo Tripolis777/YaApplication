@@ -13,19 +13,20 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.example.vkaryagin.yaapplication.Core.Callable;
+import com.example.vkaryagin.yaapplication.Callable;
 import com.example.vkaryagin.yaapplication.Core.DetectLanguage;
 import com.example.vkaryagin.yaapplication.Core.Languages;
 import com.example.vkaryagin.yaapplication.Core.Translate;
 import com.example.vkaryagin.yaapplication.Core.YaTranslateManager;
 import com.example.vkaryagin.yaapplication.Core.YaTranslateTask;
-import com.example.vkaryagin.yaapplication.Database.FavoriteTranslate;
+import com.example.vkaryagin.yaapplication.Database.HistoryTranslate;
+import com.example.vkaryagin.yaapplication.Database.Schema.HistoryTranslateEntry;
 import com.example.vkaryagin.yaapplication.R;
+import com.example.vkaryagin.yaapplication.Response;
 import com.example.vkaryagin.yaapplication.Views.TranslateListAdapter;
 
 /**
@@ -115,7 +116,7 @@ public class TranslateFragment extends BaseFragment {
         if (state != null && !state.isEmpty()) {
             translateText.setText(state.getString(ARG_TRANSLATE_TEXT));
             Log.d("TranslateFragment", "[onCreate] Bundle state. Translated_text" + state.getSerializable(ARG_TRANSLATED_TEXT).toString());
-            translatedAdapter.setTranslate((Translate) state.getSerializable(ARG_TRANSLATED_TEXT));
+            translatedAdapter.setTranslateEntry((HistoryTranslateEntry) state.getSerializable(ARG_TRANSLATED_TEXT));
             translatedAdapter.notifyDataSetChanged();
         } else {
             Log.w("TranslateFragment", "[onCreate] savedInstanceState is nullable.");
@@ -152,7 +153,7 @@ public class TranslateFragment extends BaseFragment {
             }
 
             @Override
-            public void error(final YaTranslateTask.Response res) {
+            public void error(final Response res) {
                 Log.e("TranslateFragment", "[LANGUAGES] Cants get languages. Res: " + res.toString());
                 Toast.makeText(context, "Cant get languages.", Toast.LENGTH_SHORT).show();
             }
@@ -249,7 +250,7 @@ public class TranslateFragment extends BaseFragment {
                     }
 
                     @Override
-                    public void error(final YaTranslateTask.Response res) {
+                    public void error(final Response res) {
                         Log.e("TranslateFragment", "[DETECT] Cant connect to detect language. " + res.toString());
                         Toast.makeText(context, "Cant connect to detect language.", Toast.LENGTH_SHORT).show();
 
@@ -283,22 +284,25 @@ public class TranslateFragment extends BaseFragment {
 
             YaTranslateManager translateManager = YaTranslateManager.getInstance();
             translateManager.executeTranslate(
-                    new Translate.Params(text, langIn.getLanguageCode(), langOut.getLanguageCode()),
+                    new Translate.Params(text, langIn, langOut),
                     context,
                     new Callable<Translate>() {
                         @Override
                         public void done(Translate value) {
                             if (value.checkResponseCode()) return;
 
+                            HistoryTranslate hs = new HistoryTranslate(getContext());
+                            HistoryTranslateEntry rec = hs.create(value, null);
+
                             translatedAdapter.clear();
-                            translatedAdapter.setTranslate(value);
+                            translatedAdapter.setTranslateEntry(rec);
                             translatedAdapter.notifyDataSetChanged();
 
-                            state.putSerializable(ARG_TRANSLATED_TEXT, value);
+                            state.putSerializable(ARG_TRANSLATED_TEXT, rec);
                         }
 
                         @Override
-                        public void error(final YaTranslateTask.Response res) {
+                        public void error(final Response res) {
                             Log.e("TranslateFragment",  "[TRANSLATE] Cant translate text. " + res.toString());
                            Toast.makeText(context, "Cant translate text.", Toast.LENGTH_SHORT).show();
                         }
@@ -316,21 +320,12 @@ public class TranslateFragment extends BaseFragment {
 
             TranslateListAdapter adapter = (TranslateListAdapter) translateList.getAdapter();
             if (adapter == null || adapter.isEmpty()) { error("Adapter didn't init or empty!"); return; }
-            final Translate translate = adapter.getTranslate();
-            String translatedText = translate.getTranslatedTexts().get(0);
 
-            if (languagesAdapter.isEmpty()) return;
-            Languages.Language translateLang = (Languages.Language)
-                    fromLanguageSpinner.getSelectedItem();
-            Languages.Language translatedLang = (Languages.Language)
-                    toLanguageSpinner.getSelectedItem();
-            if (translateLang == null || translatedLang == null) { error("Language is not initialize!"); return;}
+            HistoryTranslateEntry entry = adapter.getTranslateEntry();
+            HistoryTranslate historyTranslate = new HistoryTranslate(TranslateFragment.this.getContext());
+            historyTranslate.setFavorite(entry, true);
 
-            FavoriteTranslate favoriteTranslate = new FavoriteTranslate(TranslateFragment.this.getContext());
-            favoriteTranslate.insert(translateText, translatedText, translateLang.getLanguageName(),
-                    translatedLang.getLanguageName(), translateLang.getLanguageCode(), translatedLang.getLanguageCode());
-            // TODO: translateText may be not equal translated
-            sendFavoriteTranslateMsg(translateText, translatedText, translateLang, translatedLang);
+            sendFavoriteTranslateMsg(entry);
         }
 
         private void error (String errorMsg) {
@@ -338,16 +333,9 @@ public class TranslateFragment extends BaseFragment {
             Toast.makeText(TranslateFragment.this.getContext(), errorMsg, Toast.LENGTH_LONG).show();
         }
 
-        private void sendFavoriteTranslateMsg(String translateText, String translatedText,
-                                        Languages.Language translateLang, Languages.Language translatedLang) {
-            Bundle msg = new Bundle();
-            msg.putString(FavoriteFragment.COMMUNICATE_TRANSLATE_TEXT, translateText);
-            msg.putString(FavoriteFragment.COMMUNICATE_TRANSLATED_TEXT, translatedText);
-            msg.putString(FavoriteFragment.COMMUNICATE_TRANSLATE_LANG, translateLang.getLanguageName());
-            msg.putString(FavoriteFragment.COMMUNICATE_TRANSLATED_LANG, translatedLang.getLanguageName());
-
+        private void sendFavoriteTranslateMsg(HistoryTranslateEntry record) {
             Bundle data = new Bundle();
-            data.putBundle(FavoriteFragment.COMMUNICATE_FAVORITE_KEY, msg);
+            data.putSerializable(FavoriteFragment.COMMUNICATE_FAVORITE_KEY, record);
             FragmentsCommutator.getInstance().addData(FavoriteFragment.TAG, data);
         }
     }

@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 
 import android.widget.TextView;
 
+import com.example.vkaryagin.yaapplication.Database.YaAppDBOpenHelper;
 import com.example.vkaryagin.yaapplication.Fragments.BaseFragment;
 import com.example.vkaryagin.yaapplication.Fragments.Commutable;
 import com.example.vkaryagin.yaapplication.Fragments.FavoriteFragment;
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private ViewPager mViewPager;
     private FragmentsCommutator fragmentsCommutator;
+    private YaAppDBOpenHelper dbOpenHelper;
     private final int[] toolbarIconsIds = {R.drawable.ic_toolbar_main, R.drawable.ic_toolbar_favorite};
 
     @Override
@@ -55,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         fragmentsCommutator = FragmentsCommutator.getInstance();
+        dbOpenHelper = new YaAppDBOpenHelper(getBaseContext(), null);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -74,6 +77,12 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < tabLayout.getTabCount() && i < toolbarIconsIds.length; i++) {
             tabLayout.getTabAt(i).setIcon(toolbarIconsIds[i]);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        dbOpenHelper.close();
+        super.onDestroy();
     }
 
     @Override

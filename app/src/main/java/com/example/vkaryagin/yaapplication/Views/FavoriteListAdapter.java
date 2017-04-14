@@ -9,9 +9,10 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.example.vkaryagin.yaapplication.Database.Schema.FavoriteTranslateEntry;
+import com.example.vkaryagin.yaapplication.Database.Schema.HistoryTranslateEntry;
 import com.example.vkaryagin.yaapplication.R;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -19,12 +20,12 @@ import java.util.List;
  * Created by v.karyagin on 07.04.2017.
  */
 
-public class FavoriteListAdapter extends ArrayAdapter<FavoriteTranslateEntry> {
+public class FavoriteListAdapter extends ArrayAdapter<HistoryTranslateEntry> {
     private final Context context;
-    private final List<FavoriteTranslateEntry> values;
+    private final List<HistoryTranslateEntry> values;
 
-    public FavoriteListAdapter(@NonNull Context context, List<FavoriteTranslateEntry> values) {
-        super(context, R.layout.favorite_list_item, values);
+    public FavoriteListAdapter(@NonNull Context context, ArrayList<HistoryTranslateEntry> values) {
+        super(context, R.layout.favorite_list_item);
         this.context = context;
         this.values  = values;
     }
@@ -39,9 +40,9 @@ public class FavoriteListAdapter extends ArrayAdapter<FavoriteTranslateEntry> {
         TextView translateLang = (TextView) itemView.findViewById(R.id.translateLang);
         TextView translatedLang = (TextView) itemView.findViewById(R.id.translatedLang);
 
-        FavoriteTranslateEntry value = values.get(pos);
+        HistoryTranslateEntry value = values.get(pos);
         translateText.setText(value.translateText);
-        translatedText.setText(value.translatedText);
+        translatedText.setText(value.getTranslateFirst());
         translateLang.setText(value.translateLang);
         translatedLang.setText(value.translatedLang);
 

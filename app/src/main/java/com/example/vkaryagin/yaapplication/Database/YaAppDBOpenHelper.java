@@ -19,12 +19,12 @@ public class YaAppDBOpenHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        sqLiteDatabase.execSQL(FavoriteTranslate.SQL_CREATE_ENTRIES);
+        sqLiteDatabase.execSQL(HistoryTranslate.SQL_CREATE_ENTRIES);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
-        sqLiteDatabase.execSQL(FavoriteTranslate.SQL_DELETE_ENTRIES);
+        sqLiteDatabase.execSQL(HistoryTranslate.SQL_DELETE_ENTRIES);
         onCreate(sqLiteDatabase);
     }
 }

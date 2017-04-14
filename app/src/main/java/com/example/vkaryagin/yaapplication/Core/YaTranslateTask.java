@@ -1,8 +1,9 @@
 package com.example.vkaryagin.yaapplication.Core;
 
 import android.os.AsyncTask;
-import android.telecom.Call;
 import android.util.Log;
+
+import com.example.vkaryagin.yaapplication.Callable;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -83,9 +84,7 @@ public class YaTranslateTask<T extends Initiable> extends AsyncTask<String, Inte
             mCallback.error(result.getResponse());
     }
 
-    public static class Response {
-        public int code;
-        public String message;
+    public static class Response extends com.example.vkaryagin.yaapplication.Response {
 
         public Response(int responseCode, String responseMessage) {
             this.code = responseCode;

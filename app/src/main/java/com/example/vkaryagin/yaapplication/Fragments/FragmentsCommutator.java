@@ -2,6 +2,8 @@ package com.example.vkaryagin.yaapplication.Fragments;
 
 import android.os.Bundle;
 
+import com.example.vkaryagin.yaapplication.Database.YaAppDBOpenHelper;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

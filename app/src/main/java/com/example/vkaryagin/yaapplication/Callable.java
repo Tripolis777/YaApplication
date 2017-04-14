@@ -1,4 +1,4 @@
-package com.example.vkaryagin.yaapplication.Core;
+package com.example.vkaryagin.yaapplication;
 
 /**
  * Created by v.karyagin on 3/22/17.
@@ -6,5 +6,5 @@ package com.example.vkaryagin.yaapplication.Core;
 
 public interface Callable<T> {
     void done(T value);
-    void error(final YaTranslateTask.Response res);
+    void error(final Response res);
 }

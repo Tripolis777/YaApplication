@@ -6,9 +6,8 @@ import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
 
+import com.example.vkaryagin.yaapplication.Callable;
 import com.example.vkaryagin.yaapplication.R;
-
-import java.util.HashMap;
 
 /**
  * Created by tripo on 3/27/2017.
