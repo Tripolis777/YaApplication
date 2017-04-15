@@ -5,6 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.Nullable;
+import android.text.format.DateUtils;
+import android.util.Log;
 
 import com.example.vkaryagin.yaapplication.Core.Translate;
 import com.example.vkaryagin.yaapplication.Database.Schema.HistoryTranslateEntry;
@@ -13,6 +15,7 @@ import com.example.vkaryagin.yaapplication.Database.Tasks.DatabaseUpdateTask;
 import com.example.vkaryagin.yaapplication.Database.Tasks.UpdateRequest;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -48,8 +51,8 @@ public class HistoryTranslate {
 
     private final YaAppDBOpenHelper dbOpenHelper;
 
-    public HistoryTranslate(final Context context) {
-        dbOpenHelper = new YaAppDBOpenHelper(context, null);
+    public HistoryTranslate(final YaAppDBOpenHelper dbOpenHelper) {
+        this.dbOpenHelper = dbOpenHelper;
     }
 
     public List<HistoryTranslateEntry> getAll() {
@@ -129,6 +132,8 @@ public class HistoryTranslate {
                 values,
                 HistoryTranslateEntry._ID  + " = ?",
                 new String[] {Long.toString(record.id)} );
+
+        Log.i("HistoryTranslate", "[UPDATE] update rec with id: " + record.id);
 
         DatabaseUpdateTask updateTask = new DatabaseUpdateTask(dbOpenHelper);
         updateTask.execute(request);

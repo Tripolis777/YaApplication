@@ -33,8 +33,6 @@ public class FavoriteFragment extends BaseFragment {
     private FavoriteListAdapter favoriteAdapter;
     private ArrayList<HistoryTranslateEntry> favorites;
 
-    private YaAppDBOpenHelper dbOpenHelper;
-
     public FavoriteFragment() {
         favorites = new ArrayList<>();
     }
@@ -46,7 +44,8 @@ public class FavoriteFragment extends BaseFragment {
     public static FavoriteFragment newInstance(Bundle state, YaAppDBOpenHelper dbOpenHelper) {
         FavoriteFragment fragment = new FavoriteFragment();
         fragment.setArguments(state);
-        Log.e("Favorite Fragment", "Create new instance!");
+        fragment.setDBOpenHelper(dbOpenHelper);
+        Log.i("Favorite Fragment", "Create new instance!");
         return fragment;
     }
 
@@ -67,8 +66,7 @@ public class FavoriteFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_favorite, container, false);
-        Log.e("FavotiteFragment", "onCreateView");
-        HistoryTranslate favoriteTranslate = new HistoryTranslate(this.getContext());
+        HistoryTranslate favoriteTranslate = new HistoryTranslate(getDbOpenHelper());
         favorites = (ArrayList) favoriteTranslate.getFavorites();
 
         favoriteAdapter = new FavoriteListAdapter(this.getContext(), favorites);

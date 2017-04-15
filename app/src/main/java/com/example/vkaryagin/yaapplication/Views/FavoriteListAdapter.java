@@ -25,7 +25,7 @@ public class FavoriteListAdapter extends ArrayAdapter<HistoryTranslateEntry> {
     private final List<HistoryTranslateEntry> values;
 
     public FavoriteListAdapter(@NonNull Context context, ArrayList<HistoryTranslateEntry> values) {
-        super(context, R.layout.favorite_list_item);
+        super(context, R.layout.favorite_list_item, values);
         this.context = context;
         this.values  = values;
     }

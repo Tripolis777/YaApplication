@@ -69,8 +69,6 @@ public class MainActivity extends AppCompatActivity {
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        mViewPager.addOnPageChangeListener(new PageChangeListener());
-
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
@@ -170,9 +168,9 @@ public class MainActivity extends AppCompatActivity {
 
             switch (position) {
                 case 0:
-                    return TranslateFragment.newInstance(state);
+                    return TranslateFragment.newInstance(state, dbOpenHelper);
                 case 1:
-                    return FavoriteFragment.newInstance(state);
+                    return FavoriteFragment.newInstance(state, dbOpenHelper);
             }
 
             return PlaceholderFragment.newInstance(position + 1);
@@ -191,24 +189,6 @@ public class MainActivity extends AppCompatActivity {
                     return "OPTIONS";
             }
             return null;
-        }
-    }
-
-    public class PageChangeListener implements ViewPager.OnPageChangeListener {
-
-        @Override
-        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-        }
-
-        @Override
-        public void onPageSelected(int position) {
-            Log.e("Main Activity", "onPageSelected position: " + position);
-          //  ((BaseFragment) mSectionsPagerAdapter.getItem(position)).checkMessageQueue();
-        }
-
-        @Override
-        public void onPageScrollStateChanged(int state) {
-
         }
     }
 }

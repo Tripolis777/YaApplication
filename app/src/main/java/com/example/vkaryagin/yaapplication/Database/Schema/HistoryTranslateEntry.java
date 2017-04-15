@@ -54,20 +54,24 @@ public class HistoryTranslateEntry implements Record {
 
     public void setTranslate(@NonNull Translate translate) {
         this.translateText = translate.getTranslateText();
-        this.translatedText = translate.getFirstTranslatedText();
+        this.translatedText = translate.getTranslatedJSONString();
         this.translatedTexts = translate.getTranslatedTexts();
         setTranslateLanguage(translate.getTranslateLanguage());
         setTranslatedLanguage(translate.getTranslatedLanguage());
     }
 
     public List<String> getTranslatedTexts() {
+        Log.i("HistoryTranslateEntry", "[getTranslatedTexts] text: " + translatedText);
+
         if (translatedTexts == null) {
             if (translatedText == null || translatedText.isEmpty()) return new ArrayList<>();
             try {
                 this.translatedTexts = new ArrayList<>();
                 JSONArray list = new JSONArray(translatedText);
+                Log.d("HistoryTranslateEntry", "[getTranslatedTexts] list: " + list.length());
                 for (int i = 0; i < list.length(); i++) {
                     translatedTexts.add(list.getString(i));
+                    Log.d("HistoryTranslateEntry", "[getTranslatedTexts] add item: " + list.getString(i));
                 }
             } catch (JSONException e) {
                 Log.e("HistoryTranslateEntry", "[getTranslatedTexts] Cants parse json array translated list! " +
@@ -75,10 +79,19 @@ public class HistoryTranslateEntry implements Record {
                 e.printStackTrace();
             }
         }
+
+        Log.i("HistoryTranslateEntry", "[getTranslatedTexts] translatedTexts size: "
+                + translatedTexts.size());
+
         return this.translatedTexts;
     }
 
-    public String getTranslateFirst() { return this.getTranslatedTexts().get(0); }
+    public String getTranslateFirst() {
+        Log.i("HistortTranslateEntry", "getTranslateFirst");
+        if (!this.getTranslatedTexts().isEmpty())
+            return this.getTranslatedTexts().get(0);
+        return null;
+    }
 
     @Override
     public ContentValues getContentValues() {
@@ -90,7 +103,7 @@ public class HistoryTranslateEntry implements Record {
         values.put(COLUMN_NAME_TRANSLATED_LANG, translatedLang);
         values.put(COLUMN_NAME_TRANSLATE_CODE, translateCode);
         values.put(COLUMN_NAME_TRANSLATED_CODE, translatedCode);
-        values.put(COLUMN_NAME_TRANSLATE_DATE, date);
+        //values.put(COLUMN_NAME_TRANSLATE_DATE, date);
         values.put(COLUMN_NAME_IS_FAVORITE, favorite);
 
         return values;
@@ -102,9 +115,7 @@ public class HistoryTranslateEntry implements Record {
     }
 
     @Override
-    public String getColumnNameNullable() {
-        return null;
-    }
+    public String getColumnNameNullable() { return null; }
 
     @Override
     public void setId(long id) {

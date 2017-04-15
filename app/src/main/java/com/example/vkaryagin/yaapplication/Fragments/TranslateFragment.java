@@ -25,6 +25,7 @@ import com.example.vkaryagin.yaapplication.Core.YaTranslateManager;
 import com.example.vkaryagin.yaapplication.Core.YaTranslateTask;
 import com.example.vkaryagin.yaapplication.Database.HistoryTranslate;
 import com.example.vkaryagin.yaapplication.Database.Schema.HistoryTranslateEntry;
+import com.example.vkaryagin.yaapplication.Database.YaAppDBOpenHelper;
 import com.example.vkaryagin.yaapplication.R;
 import com.example.vkaryagin.yaapplication.Response;
 import com.example.vkaryagin.yaapplication.Views.TranslateListAdapter;
@@ -74,9 +75,10 @@ public class TranslateFragment extends BaseFragment {
      * can retrieve with {@link #setSavedState(Bundle)} ()}.  May be null.
      * @return Returns a new fragment instance.
      */
-    public static TranslateFragment newInstance(Bundle state) {
+    public static TranslateFragment newInstance(Bundle state, YaAppDBOpenHelper dbOpenHelper) {
         TranslateFragment fragment = new TranslateFragment();
         fragment.setSavedState(state);
+        fragment.setDBOpenHelper(dbOpenHelper);
         Log.e("TraslateFragment", "Instance new!");
         return fragment;
     }
@@ -291,7 +293,7 @@ public class TranslateFragment extends BaseFragment {
                         public void done(Translate value) {
                             if (value.checkResponseCode()) return;
 
-                            HistoryTranslate hs = new HistoryTranslate(getContext());
+                            HistoryTranslate hs = new HistoryTranslate(getDbOpenHelper());
                             HistoryTranslateEntry rec = hs.create(value, null);
 
                             translatedAdapter.clear();
@@ -322,7 +324,7 @@ public class TranslateFragment extends BaseFragment {
             if (adapter == null || adapter.isEmpty()) { error("Adapter didn't init or empty!"); return; }
 
             HistoryTranslateEntry entry = adapter.getTranslateEntry();
-            HistoryTranslate historyTranslate = new HistoryTranslate(TranslateFragment.this.getContext());
+            HistoryTranslate historyTranslate = new HistoryTranslate(TranslateFragment.this.getDbOpenHelper());
             historyTranslate.setFavorite(entry, true);
 
             sendFavoriteTranslateMsg(entry);
