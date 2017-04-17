@@ -24,6 +24,7 @@ import com.example.vkaryagin.yaapplication.Fragments.BaseFragment;
 import com.example.vkaryagin.yaapplication.Fragments.Commutable;
 import com.example.vkaryagin.yaapplication.Fragments.FavoriteFragment;
 import com.example.vkaryagin.yaapplication.Fragments.FragmentsCommutator;
+import com.example.vkaryagin.yaapplication.Fragments.HistoryFragment;
 import com.example.vkaryagin.yaapplication.Fragments.TranslateFragment;
 
 import java.util.ArrayList;
@@ -171,6 +172,8 @@ public class MainActivity extends AppCompatActivity {
                     return TranslateFragment.newInstance(state, dbOpenHelper);
                 case 1:
                     return FavoriteFragment.newInstance(state, dbOpenHelper);
+                case 2:
+                    return HistoryFragment.newInstance(state, dbOpenHelper);
             }
 
             return PlaceholderFragment.newInstance(position + 1);
@@ -186,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 2:
-                    return "OPTIONS";
+                    return "HISTORY";
             }
             return null;
         }

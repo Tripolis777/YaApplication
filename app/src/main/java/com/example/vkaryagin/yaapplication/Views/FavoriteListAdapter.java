@@ -8,8 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
+import com.example.vkaryagin.yaapplication.Database.HistoryTranslate;
 import com.example.vkaryagin.yaapplication.Database.Schema.HistoryTranslateEntry;
+import com.example.vkaryagin.yaapplication.Database.YaAppDBOpenHelper;
 import com.example.vkaryagin.yaapplication.R;
 
 import java.util.ArrayList;
@@ -20,44 +23,20 @@ import java.util.List;
  * Created by v.karyagin on 07.04.2017.
  */
 
-public class FavoriteListAdapter extends ArrayAdapter<HistoryTranslateEntry> {
-    private final Context context;
-    private final List<HistoryTranslateEntry> values;
-
-    public FavoriteListAdapter(@NonNull Context context, ArrayList<HistoryTranslateEntry> values) {
-        super(context, R.layout.favorite_list_item, values);
-        this.context = context;
-        this.values  = values;
+public class FavoriteListAdapter extends HistoryListAdapter {
+    public FavoriteListAdapter(@NonNull Context context, ArrayList<HistoryTranslateEntry> values, YaAppDBOpenHelper dbOpenHelper) {
+        super(context, values, dbOpenHelper);
     }
 
     @Override
-    public View getView(int pos, View convertView, ViewGroup parent){
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View itemView = inflater.inflate(R.layout.favorite_list_item, parent, false);
-
-        TextView translateText = (TextView) itemView.findViewById(R.id.translateText);
-        TextView translatedText = (TextView) itemView.findViewById(R.id.translatedText);
-        TextView translateLang = (TextView) itemView.findViewById(R.id.translateLang);
-        TextView translatedLang = (TextView) itemView.findViewById(R.id.translatedLang);
-
-        HistoryTranslateEntry value = values.get(pos);
-        translateText.setText(value.translateText);
-        translatedText.setText(value.getTranslateFirst());
-        translateLang.setText(value.translateLang);
-        translatedLang.setText(value.translatedLang);
-
-        return itemView;
+    protected View.OnClickListener getOnFavoriteButtonClickListener(final int pos, final HistoryTranslateEntry entry) {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                values.remove(pos);
+                setFavoriteRecord(entry, false);
+                FavoriteListAdapter.this.notifyDataSetChanged();
+            }
+        };
     }
-
-
-    @Override
-    public void addAll(@Nullable Collection collection) {
-        values.addAll(collection);
-        super.addAll(collection);
-    }
-
-    public void addToFirstAll(@NonNull Collection collection) {
-        values.addAll(0, collection);
-    }
-    public void removeItem(int index) { values.remove(index); }
 }

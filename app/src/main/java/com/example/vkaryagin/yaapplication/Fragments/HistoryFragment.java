@@ -12,6 +12,7 @@ import com.example.vkaryagin.yaapplication.Database.Schema.HistoryTranslateEntry
 import com.example.vkaryagin.yaapplication.Database.YaAppDBOpenHelper;
 import com.example.vkaryagin.yaapplication.R;
 import com.example.vkaryagin.yaapplication.Views.FavoriteListAdapter;
+import com.example.vkaryagin.yaapplication.Views.HistoryListAdapter;
 
 import java.util.ArrayList;
 
@@ -22,10 +23,10 @@ import java.util.ArrayList;
 public class HistoryFragment extends BaseFragment {
 
     private ArrayList<HistoryTranslateEntry> historyRecords;
-    private FavoriteListAdapter historyAdapter;
+    private HistoryListAdapter historyAdapter;
     private ListView historyListView;
 
-    public static HistoryFragment getInstance(Bundle state, YaAppDBOpenHelper dbOpenHelper) {
+    public static HistoryFragment newInstance(Bundle state, YaAppDBOpenHelper dbOpenHelper) {
         HistoryFragment fragment = new HistoryFragment();
         fragment.setArguments(state);
         fragment.setDBOpenHelper(dbOpenHelper);
@@ -40,7 +41,7 @@ public class HistoryFragment extends BaseFragment {
         HistoryTranslate favoriteTranslate = new HistoryTranslate(getDbOpenHelper());
         historyRecords = (ArrayList) favoriteTranslate.getAll();
 
-        historyAdapter = new FavoriteListAdapter(this.getContext(), historyRecords);
+        historyAdapter = new HistoryListAdapter(this.getContext(), historyRecords, getDbOpenHelper());
 
         historyListView = (ListView) rootView.findViewById(R.id.favoroteList);
         historyListView.setAdapter(historyAdapter);
@@ -58,30 +59,6 @@ public class HistoryFragment extends BaseFragment {
 
     @Override
     public void checkMessageQueue() {
-        Log.d("FavoriteFragment", "[checkMessageQueue] START");
-        FragmentsCommutator fragmentsCommutator = FragmentsCommutator.getInstance();
-        ArrayList<Bundle> data = (ArrayList) fragmentsCommutator.getData(TAG);
-        if (data == null || data.isEmpty()) return;
 
-        Log.i("FavoriteFragment", "[checkMessageQueue] data size: " + data.size());
-
-        ArrayList<HistoryTranslateEntry> newRecs = new ArrayList<>();
-        for(Bundle msg : data) {
-            HistoryTranslateEntry favoriteRecord = (HistoryTranslateEntry) msg.getSerializable(COMMUNICATE_FAVORITE_KEY);
-            Log.d("FavoriteFragment", "checkMassageQueue favoriteRecord is " + (
-                    favoriteRecord == null ? "null" : "init") + "!");
-            if (favoriteRecord == null) continue;
-
-            newRecs.add(favoriteRecord);
-        }
-
-        if (favoriteListView != null) {
-            FavoriteListAdapter adapter = (FavoriteListAdapter) favoriteListView.getAdapter();
-            Log.d("FavoriteFragment", "[checkMessageQueue] add to list view " + newRecs.size() + " new items!");
-            adapter.addToFirstAll(newRecs);
-            adapter.notifyDataSetChanged();
-        } else {
-            favorites.addAll(0, newRecs);
-        }
     }
 }

@@ -294,7 +294,7 @@ public class TranslateFragment extends BaseFragment {
                             if (value.checkResponseCode()) return;
 
                             HistoryTranslate hs = new HistoryTranslate(getDbOpenHelper());
-                            HistoryTranslateEntry rec = hs.create(value, null);
+                            HistoryTranslateEntry rec = hs.create(value, false);
 
                             translatedAdapter.clear();
                             translatedAdapter.setTranslateEntry(rec);
@@ -327,18 +327,12 @@ public class TranslateFragment extends BaseFragment {
             HistoryTranslate historyTranslate = new HistoryTranslate(TranslateFragment.this.getDbOpenHelper());
             historyTranslate.setFavorite(entry, true);
 
-            sendFavoriteTranslateMsg(entry);
+            FavoriteFragment.addFavorite(entry);
         }
 
         private void error (String errorMsg) {
             Log.e("TranslateFragment",  "[FAVORITE BUTTON] error: " + errorMsg);
             Toast.makeText(TranslateFragment.this.getContext(), errorMsg, Toast.LENGTH_LONG).show();
-        }
-
-        private void sendFavoriteTranslateMsg(HistoryTranslateEntry record) {
-            Bundle data = new Bundle();
-            data.putSerializable(FavoriteFragment.COMMUNICATE_FAVORITE_KEY, record);
-            FragmentsCommutator.getInstance().addData(FavoriteFragment.TAG, data);
         }
     }
 }

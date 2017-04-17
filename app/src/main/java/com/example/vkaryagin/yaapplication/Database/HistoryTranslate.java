@@ -46,7 +46,8 @@ public class HistoryTranslate {
             HistoryTranslateEntry.COLUMN_NAME_TRANSLATED_LANG,
             HistoryTranslateEntry.COLUMN_NAME_TRANSLATE_CODE,
             HistoryTranslateEntry.COLUMN_NAME_TRANSLATED_CODE,
-            HistoryTranslateEntry.COLUMN_NAME_TRANSLATE_DATE
+            HistoryTranslateEntry.COLUMN_NAME_TRANSLATE_DATE,
+            HistoryTranslateEntry.COLUMN_NAME_IS_FAVORITE
     };
 
     private final YaAppDBOpenHelper dbOpenHelper;
@@ -97,6 +98,8 @@ public class HistoryTranslate {
                     HistoryTranslateEntry.COLUMN_NAME_TRANSLATED_CODE));
             record.date = cursor.getString(cursor.getColumnIndexOrThrow(
                     HistoryTranslateEntry.COLUMN_NAME_TRANSLATE_DATE));
+            record.favorite = cursor.getInt(cursor.getColumnIndexOrThrow(
+                    HistoryTranslateEntry.COLUMN_NAME_IS_FAVORITE)) != 0;
             records.add(record);
         }
         return records;

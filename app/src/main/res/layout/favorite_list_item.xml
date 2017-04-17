@@ -8,14 +8,13 @@
         android:id="@+id/translatedLang"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
         android:layout_below="@+id/translatedText"
-        android:layout_toEndOf="@+id/translateIcon"
-        android:layout_toRightOf="@+id/translateIcon"
         android:gravity="left"
         android:text="TextView"
-        tools:textAlignment="gravity" />
+        tools:textAlignment="gravity"
+        android:layout_toRightOf="@+id/translateIcon"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <TextView
         android:id="@+id/translatedText"
@@ -24,13 +23,13 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/translateText"
-        android:layout_toLeftOf="@+id/favoriteItemButton"
         android:layout_toStartOf="@+id/favoriteItemButton"
         android:autoText="true"
         android:maxLines="3"
         android:text="TextView"
         android:textStyle="italic"
-        tools:textSize="14sp" />
+        tools:textSize="14sp"
+        android:layout_toLeftOf="@+id/favoriteItemButton" />
 
     <TextView
         android:id="@+id/translateLang"
@@ -49,35 +48,36 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/translateLang"
-        android:layout_below="@+id/translatedText"
         android:layout_centerHorizontal="true"
         android:longClickable="true"
-        app:srcCompat="@mipmap/ic_launcher" />
+        app:srcCompat="@mipmap/ic_launcher"
+        android:layout_below="@+id/translatedText" />
 
     <TextView
         android:id="@+id/translateText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@+id/favoriteItemButton"
-        android:layout_toStartOf="@+id/favoriteItemButton"
-        android:autoText="true"
         android:maxLines="4"
         android:text="TextView "
         android:textStyle="bold"
-        tools:textSize="24sp" />
+        tools:textSize="24sp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_toLeftOf="@+id/favoriteItemButton"
+        android:layout_toStartOf="@+id/favoriteItemButton" />
 
-    <ImageButton
+    <ToggleButton
         android:id="@+id/favoriteItemButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/translatedLang"
+        style="@style/favoriteToggleButton"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:elevation="0dp"
-        app:srcCompat="@drawable/ic_toolbar_favorite" />
+        android:width="16dp"
+        android:height="16dp"
+        android:background="@drawable/ic_favorite_toggle_bg"
+        android:text="ToggleButton" />
 
 </RelativeLayout>
