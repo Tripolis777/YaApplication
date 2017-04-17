@@ -306,7 +306,7 @@ public class TranslateFragment extends BaseFragment {
                         @Override
                         public void error(final Response res) {
                             Log.e("TranslateFragment",  "[TRANSLATE] Cant translate text. " + res.toString());
-                           Toast.makeText(context, "Cant translate text.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "Cant translate text.", Toast.LENGTH_SHORT).show();
                         }
                     }
             );

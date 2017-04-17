@@ -17,4 +17,13 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="Widget.Button.Toggle" parent="android:Widget" >
+        <item name="android:background">@drawable/ic_favorite_toggle_bg</item>
+        <item name="android:disabledAlpha">?android:attr/disabledAlpha</item>
+    </style>
+
+    <style name="favoriteToggleButton" parent="@android:style/Theme.Black">
+
+    </style>
+
 </resources>

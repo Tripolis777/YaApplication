@@ -16,36 +16,20 @@ import com.example.vkaryagin.yaapplication.Views.FavoriteListAdapter;
 import java.util.ArrayList;
 
 /**
- * Created by tripo on 3/19/2017.
+ * Created by v.karyagin on 17.04.2017.
  */
 
-public class FavoriteFragment extends BaseFragment {
+public class HistoryFragment extends BaseFragment {
 
-    public static final String TAG = "favotite_fragment";
-    public static final String COMMUNICATE_FAVORITE_KEY = "add_favorite";
+    private ArrayList<HistoryTranslateEntry> historyRecords;
+    private FavoriteListAdapter historyAdapter;
+    private ListView historyListView;
 
-    /**
-     * Saved instance state arguments
-     */
-    private static final String ARG_FAVORITE_LIST = "favorite_list";
-
-    private ListView favoriteListView;
-    private FavoriteListAdapter favoriteAdapter;
-    private ArrayList<HistoryTranslateEntry> favorites;
-
-    public FavoriteFragment() {
-        favorites = new ArrayList<>();
-    }
-
-    /**
-     * Returns a new instance of this fragment for the given section
-     * number.
-     */
-    public static FavoriteFragment newInstance(Bundle state, YaAppDBOpenHelper dbOpenHelper) {
-        FavoriteFragment fragment = new FavoriteFragment();
+    public static HistoryFragment getInstance(Bundle state, YaAppDBOpenHelper dbOpenHelper) {
+        HistoryFragment fragment = new HistoryFragment();
         fragment.setArguments(state);
         fragment.setDBOpenHelper(dbOpenHelper);
-        Log.i("Favorite Fragment", "Create new instance!");
+        Log.i("History Fragment", "Create new instance!");
         return fragment;
     }
 
@@ -54,12 +38,12 @@ public class FavoriteFragment extends BaseFragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_favorite, container, false);
         HistoryTranslate favoriteTranslate = new HistoryTranslate(getDbOpenHelper());
-        favorites = (ArrayList) favoriteTranslate.getFavorites();
+        historyRecords = (ArrayList) favoriteTranslate.getAll();
 
-        favoriteAdapter = new FavoriteListAdapter(this.getContext(), favorites);
+        historyAdapter = new FavoriteListAdapter(this.getContext(), historyRecords);
 
-        favoriteListView = (ListView) rootView.findViewById(R.id.favoroteList);
-        favoriteListView.setAdapter(favoriteAdapter);
+        historyListView = (ListView) rootView.findViewById(R.id.favoroteList);
+        historyListView.setAdapter(historyAdapter);
 
         return rootView;
     }
