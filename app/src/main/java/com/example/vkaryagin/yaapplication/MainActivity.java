@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private ViewPager mViewPager;
     private YaAppDBOpenHelper dbOpenHelper;
-    private final int[] toolbarIconsIds = {R.drawable.ic_toolbar_main, R.drawable.ic_toolbar_favorite};
+    private final int[] toolbarIconsIds = {R.drawable.ic_toolbar_main, R.drawable.ic_toolbar_favorite, R.drawable.ic_toobar_history};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,15 +148,6 @@ public class MainActivity extends AppCompatActivity {
         public int getCount() {
             // Show 3 total pages.
             return 3;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 2:
-                    return "HISTORY";
-            }
-            return null;
         }
     }
 }

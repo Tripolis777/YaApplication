@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.vkaryagin.yaapplication.Callable;
@@ -113,6 +115,8 @@ public class TranslateFragment extends BaseFragment {
         favoriteButton = (ImageButton) rootView.findViewById(R.id.favoroteButton);
         toLanguageSpinner = (Spinner) rootView.findViewById(R.id.toLanguageSpinner);
         fromLanguageSpinner = (Spinner) rootView.findViewById(R.id.fromLanguageSpinner);
+
+        ((TextView) rootView.findViewById(R.id.yaCreditsText)).setMovementMethod(LinkMovementMethod.getInstance());
 
         if (state != null && !state.isEmpty()) {
             translateText.setText(state.getString(ARG_TRANSLATE_TEXT));
