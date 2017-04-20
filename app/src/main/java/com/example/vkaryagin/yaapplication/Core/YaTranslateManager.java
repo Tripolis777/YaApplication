@@ -6,6 +6,7 @@ import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
 
+import com.example.vkaryagin.yaapplication.ApplicationUtils;
 import com.example.vkaryagin.yaapplication.Callable;
 import com.example.vkaryagin.yaapplication.R;
 
@@ -19,7 +20,7 @@ import com.example.vkaryagin.yaapplication.R;
 public class YaTranslateManager {
 
     private static YaTranslateManager instance;
-    private Languages languages;
+    private final Languages languages;
    // private HashMap<String, Translate> lastRequests;   // Future cache last 10 request maybe
 
     private YaTranslateManager() {
@@ -38,7 +39,11 @@ public class YaTranslateManager {
             return;
         }
 
-        if (!this.checkNetwork(context)) return;
+        if (!this.checkNetwork(context)) {
+            ApplicationUtils.throwAlertDialog(context, R.string.network_not_connection_title,
+                    R.string.network_not_connection_message);
+            return;
+        }
 
         YaTranslateTask<Languages> getLanguagesTask = new YaTranslateTask<>(languages, callback);
         getLanguagesTask.execute(YandexHttpApi.getLanguagesLink(context));
@@ -47,7 +52,11 @@ public class YaTranslateManager {
     public void executeTranslate(Translate.Params params, final Context context,
                                  final Callable<Translate> callback) {
         //Some cache code
-        if (!this.checkNetwork(context)) return;
+        if (!this.checkNetwork(context)) {
+            ApplicationUtils.throwAlertDialog(context, R.string.network_not_connection_title,
+                    R.string.network_not_connection_message);
+            return;
+        }
 
         YaTranslateTask<Translate> getTranslateTask = new YaTranslateTask<>(new Translate(params), callback);
         getTranslateTask.execute(YandexHttpApi.getTranslateLink(context, params));
@@ -56,15 +65,16 @@ public class YaTranslateManager {
     public void executeDetect(String text, final Context context,
                               final Callable<DetectLanguage> callback) {
 
-        if (!this.checkNetwork(context)) return;
+        if (!this.checkNetwork(context))  {
+            ApplicationUtils.throwAlertDialog(context, R.string.network_not_connection_title,
+                    R.string.network_not_connection_message);
+            return;
+        }
 
         YaTranslateTask<DetectLanguage> getDetectLanguageTask = new YaTranslateTask<>(new DetectLanguage(), callback);
         getDetectLanguageTask.execute(YandexHttpApi.getDetectLink(context, text));
     }
 
-    public void resetLanguages() {
-        this.languages = new Languages();
-    }
     public Languages getLanguages() { return this.languages; }
 
     private boolean checkNetwork(Context context) {

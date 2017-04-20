@@ -56,7 +56,7 @@ public class HistoryFragment extends BaseFragment {
     public void setUserVisibleHint(boolean isVisibleHint) {
         super.setUserVisibleHint(isVisibleHint);
         Log.e("FavoriteFragment", "[setUserVisibleHint] set is to " + isVisibleHint);
-        if (isVisibleHint) {
+        if (isVisibleHint && historyAdapter != null) {
             historyAdapter.clear();
             HistoryTranslate favoriteTranslate = new HistoryTranslate(getDbOpenHelper());
             historyAdapter.addAll(favoriteTranslate.getAll());

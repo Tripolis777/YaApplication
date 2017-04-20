@@ -25,8 +25,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="textMultiLine"
-                android:text="Input Text" />
+                android:hint="@string/input_text_hint"
+                android:inputType="textMultiLine" />
 
         </LinearLayout>
     </ScrollView>
@@ -66,12 +66,21 @@
             android:layout_weight="2.86"
             android:text="Перевести" />
 
-        <ImageButton
-            android:id="@+id/favoroteButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@android:drawable/btn_star"
-            android:visibility="visible" />
+        <ToggleButton
+            android:id="@+id/favoriteButton"
+            style="@style/favoriteToggleButton"
+            android:layout_width="40dp"
+            android:layout_height="45dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_weight="0.17"
+            android:width="16dp"
+            android:height="16dp"
+            android:background="@drawable/ic_favorite_toggle_bg"
+            android:checked="false"
+            android:enabled="false"
+            android:text="ToggleButton" />
 
     </LinearLayout>
 

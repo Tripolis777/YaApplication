@@ -101,8 +101,7 @@ public class YaTranslateTask<T extends Initiable> extends AsyncTask<String, Inte
         private T object;
         private Response res;
 
-
-        public ResponseObject(T object) {
+        public ResponseObject(final T object) {
             this.object = object;
             this.res = new Response(HttpURLConnection.HTTP_OK, "OK");
         }

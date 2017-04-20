@@ -13,12 +13,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
+import com.example.vkaryagin.yaapplication.ApplicationUtils;
 import com.example.vkaryagin.yaapplication.Callable;
 import com.example.vkaryagin.yaapplication.Core.DetectLanguage;
 import com.example.vkaryagin.yaapplication.Core.Languages;
@@ -55,7 +56,7 @@ public class TranslateFragment extends BaseFragment {
     private EditText translateText;
     private ListView translateList;
     private Button translateButton;
-    private ImageButton favoriteButton;
+    private ToggleButton favoriteButton;
     private Spinner toLanguageSpinner;
     private Spinner fromLanguageSpinner;
 
@@ -112,17 +113,22 @@ public class TranslateFragment extends BaseFragment {
         translateText   = (EditText) rootView.findViewById(R.id.translateTextEdit);
         translateList   = (ListView) rootView.findViewById(R.id.translateList);
         translateButton = (Button) rootView.findViewById(R.id.translateButton);
-        favoriteButton = (ImageButton) rootView.findViewById(R.id.favoroteButton);
+        favoriteButton = (ToggleButton) rootView.findViewById(R.id.favoriteButton);
         toLanguageSpinner = (Spinner) rootView.findViewById(R.id.toLanguageSpinner);
         fromLanguageSpinner = (Spinner) rootView.findViewById(R.id.fromLanguageSpinner);
 
         ((TextView) rootView.findViewById(R.id.yaCreditsText)).setMovementMethod(LinkMovementMethod.getInstance());
 
         if (state != null && !state.isEmpty()) {
-            translateText.setText(state.getString(ARG_TRANSLATE_TEXT));
-            Log.d("TranslateFragment", "[onCreate] Bundle state. Translated_text" + state.getSerializable(ARG_TRANSLATED_TEXT).toString());
-            translatedAdapter.setTranslateEntry((HistoryTranslateEntry) state.getSerializable(ARG_TRANSLATED_TEXT));
-            translatedAdapter.notifyDataSetChanged();
+            HistoryTranslateEntry rec = (HistoryTranslateEntry) state.getSerializable(ARG_TRANSLATED_TEXT);
+
+            if(rec != null) {
+                translatedAdapter.setTranslateEntry(rec);
+                translatedAdapter.notifyDataSetChanged();
+
+                favoriteButton.setEnabled(true);
+                favoriteButton.setChecked(rec.favorite);
+            }
         } else {
             Log.w("TranslateFragment", "[onCreate] savedInstanceState is nullable.");
         }
@@ -131,7 +137,7 @@ public class TranslateFragment extends BaseFragment {
         fromLanguageSpinner.setAdapter(languagesAdapter);
         translateList.setAdapter(translatedAdapter);
 
-        translateButton.setOnClickListener(new OnClickTranslateButtonListener());
+        translateButton.setOnClickListener(new OnClickTranslateButtonListener(context));
         translateText.addTextChangedListener(new OnChangeTranslateText());
 
         favoriteButton.setOnClickListener(new OnClickFavoriteButtonListener());
@@ -251,11 +257,15 @@ public class TranslateFragment extends BaseFragment {
         public void afterTextChanged(final Editable editable) {}
     }
 
-    //TODO: Возможно стоит это вынести
     /**
      * Create button behavior class
      */
     private class OnClickTranslateButtonListener implements View.OnClickListener {
+        private final Context context;
+
+        public OnClickTranslateButtonListener(Context context) {
+            this.context = context;
+        }
 
         @Override
         public void onClick(View view) {
@@ -264,6 +274,7 @@ public class TranslateFragment extends BaseFragment {
             if (text.isEmpty()) { return; }
             if (toLanguageSpinner.getAdapter().isEmpty() ||
                     fromLanguageSpinner.getAdapter().isEmpty()) {
+                ApplicationUtils.throwAlertDialog(this.context, R.string.language_list_empty_title, R.string.language_list_empty_message);
                 return;
             }
 
@@ -273,7 +284,7 @@ public class TranslateFragment extends BaseFragment {
             YaTranslateManager translateManager = YaTranslateManager.getInstance();
             translateManager.executeTranslate(
                     new Translate.Params(text, langIn, langOut),
-                    context,
+                    this.context,
                     new Callable<Translate>() {
                         @Override
                         public void done(Translate value) {
@@ -285,6 +296,7 @@ public class TranslateFragment extends BaseFragment {
                             translatedAdapter.clear();
                             translatedAdapter.setTranslateEntry(rec);
                             translatedAdapter.notifyDataSetChanged();
+                            favoriteButton.setEnabled(true);
 
                             state.putSerializable(ARG_TRANSLATED_TEXT, rec);
                         }
@@ -303,15 +315,15 @@ public class TranslateFragment extends BaseFragment {
 
         @Override
         public void onClick(View view) {
-            String translateText = TranslateFragment.this.translateText.getText().toString();
-            if (translateText.isEmpty()) { error("Translate text is empty!"); return; }
-
             TranslateListAdapter adapter = (TranslateListAdapter) translateList.getAdapter();
-            if (adapter == null || adapter.isEmpty()) { error("Adapter didn't init or empty!"); return; }
+            if (adapter == null || adapter.isEmpty()) {
+                error("Adapter didn't init or empty!");
+                return;
+            }
 
             HistoryTranslateEntry entry = adapter.getTranslateEntry();
             HistoryTranslate historyTranslate = new HistoryTranslate(TranslateFragment.this.getDbOpenHelper());
-            historyTranslate.setFavorite(entry, true);
+            historyTranslate.setFavorite(entry, ((ToggleButton) view).isChecked());
         }
 
         private void error (String errorMsg) {
