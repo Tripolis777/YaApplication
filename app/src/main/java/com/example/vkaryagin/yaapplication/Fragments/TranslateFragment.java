@@ -300,6 +300,8 @@ public class TranslateFragment extends BaseFragment {
                             translatedAdapter.setTranslateEntry(rec);
                             translatedAdapter.notifyDataSetChanged();
 
+                            HistoryFragment.addHistoryRecord(rec);
+
                             state.putSerializable(ARG_TRANSLATED_TEXT, rec);
                         }
 
@@ -327,7 +329,7 @@ public class TranslateFragment extends BaseFragment {
             HistoryTranslate historyTranslate = new HistoryTranslate(TranslateFragment.this.getDbOpenHelper());
             historyTranslate.setFavorite(entry, true);
 
-            FavoriteFragment.addFavorite(entry);
+            FavoriteFragment.addHistoryRecord(entry);
         }
 
         private void error (String errorMsg) {
