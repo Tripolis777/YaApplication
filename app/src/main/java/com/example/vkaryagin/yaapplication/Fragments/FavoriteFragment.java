@@ -7,16 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.example.vkaryagin.yaapplication.Core.Initiable;
 import com.example.vkaryagin.yaapplication.Database.HistoryTranslate;
-import com.example.vkaryagin.yaapplication.Database.Schema.HistoryTranslateEntry;
 import com.example.vkaryagin.yaapplication.Database.YaAppDBOpenHelper;
 import com.example.vkaryagin.yaapplication.R;
 import com.example.vkaryagin.yaapplication.Views.FavoriteListAdapter;
+import com.example.vkaryagin.yaapplication.Views.HistoryListAdapter;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by tripo on 3/19/2017.
@@ -46,14 +43,26 @@ public class FavoriteFragment extends HistoryFragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_favorite, container, false);
         HistoryTranslate favoriteTranslate = new HistoryTranslate(getDbOpenHelper());
-        setRecords(favoriteTranslate.getFavorites());
+        ArrayList historyRecords = (ArrayList) favoriteTranslate.getAll();
 
-        favoriteAdapter = new FavoriteListAdapter(this.getContext(), new ArrayList<>(records.values()),
-                getDbOpenHelper());
+        historyAdapter = new HistoryListAdapter(this.getContext(), historyRecords, getDbOpenHelper());
+        favoriteAdapter = new FavoriteListAdapter(this.getContext(), historyRecords, getDbOpenHelper());
 
         favoriteListView = (ListView) rootView.findViewById(R.id.favoroteList);
         favoriteListView.setAdapter(favoriteAdapter);
 
         return rootView;
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleHint) {
+        super.setUserVisibleHint(isVisibleHint);
+        Log.e("FavoriteFragment", "[setUserVisibleHint] set is to " + isVisibleHint);
+        if (isVisibleHint) {
+            favoriteAdapter.clear();
+            HistoryTranslate favoriteTranslate = new HistoryTranslate(getDbOpenHelper());
+            favoriteAdapter.addAll(favoriteTranslate.getFavorites());
+            favoriteAdapter.notifyDataSetChanged();
+        }
     }
 }

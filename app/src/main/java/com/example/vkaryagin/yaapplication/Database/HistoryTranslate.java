@@ -1,11 +1,9 @@
 package com.example.vkaryagin.yaapplication.Database;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.Nullable;
-import android.text.format.DateUtils;
 import android.util.Log;
 
 import com.example.vkaryagin.yaapplication.Core.Translate;
@@ -15,7 +13,6 @@ import com.example.vkaryagin.yaapplication.Database.Tasks.DatabaseUpdateTask;
 import com.example.vkaryagin.yaapplication.Database.Tasks.UpdateRequest;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**

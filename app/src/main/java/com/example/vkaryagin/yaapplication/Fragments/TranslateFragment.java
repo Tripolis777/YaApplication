@@ -22,7 +22,6 @@ import com.example.vkaryagin.yaapplication.Core.DetectLanguage;
 import com.example.vkaryagin.yaapplication.Core.Languages;
 import com.example.vkaryagin.yaapplication.Core.Translate;
 import com.example.vkaryagin.yaapplication.Core.YaTranslateManager;
-import com.example.vkaryagin.yaapplication.Core.YaTranslateTask;
 import com.example.vkaryagin.yaapplication.Database.HistoryTranslate;
 import com.example.vkaryagin.yaapplication.Database.Schema.HistoryTranslateEntry;
 import com.example.vkaryagin.yaapplication.Database.YaAppDBOpenHelper;
@@ -44,7 +43,7 @@ public class TranslateFragment extends BaseFragment {
      * The fragment argument representing the section number for this
      * fragment.
      */
-    public static final String NAME = "favorite_fragment";
+    public static final String TAG = "favorite_fragment";
 
     private static final String ARG_TRANSLATE_TEXT = "translate_text";
     private static final String ARG_TRANSLATE_LANG = "translate_lang";
@@ -164,18 +163,6 @@ public class TranslateFragment extends BaseFragment {
         return rootView;
     }
 
-//    @Override
-//    public void onSaveInstanceState(Bundle outState) {
-//        super.onSaveInstanceState(outState);
-//        Log.w("SaveInstanceState", "Put into ourState data!");
-//        state.putString(ARG_TRANSLATE_TEXT, translateText.getText().toString());
-//        state.putString(ARG_TRANSLATE_LANG,((Languages.Language)
-//                fromLanguageSpinner.getSelectedItem()).getLanguageCode());
-//        state.putString(ARG_TRANSLATED_LANG,((Languages.Language)
-//                toLanguageSpinner.getSelectedItem()).getLanguageCode());
-//        //state.putStringArray(ARG_TRANSLATED_TEXT, getArguments().getStringArray(ARG_TRANSLATED_TEXT));
-//    }
-
     /**
      * Initialize {@link #toLanguageSpinner} and {@link #fromLanguageSpinner} spinners
      * by all available languages
@@ -216,11 +203,6 @@ public class TranslateFragment extends BaseFragment {
      */
     public void setOutputLanguage(int langNumber) {
         toLanguageSpinner.setSelection(langNumber);
-    }
-
-    @Override
-    public void checkMessageQueue() {
-
     }
 
     private class OnChangeTranslateText implements TextWatcher {
@@ -300,8 +282,6 @@ public class TranslateFragment extends BaseFragment {
                             translatedAdapter.setTranslateEntry(rec);
                             translatedAdapter.notifyDataSetChanged();
 
-                            HistoryFragment.addHistoryRecord(rec);
-
                             state.putSerializable(ARG_TRANSLATED_TEXT, rec);
                         }
 
@@ -328,8 +308,6 @@ public class TranslateFragment extends BaseFragment {
             HistoryTranslateEntry entry = adapter.getTranslateEntry();
             HistoryTranslate historyTranslate = new HistoryTranslate(TranslateFragment.this.getDbOpenHelper());
             historyTranslate.setFavorite(entry, true);
-
-            FavoriteFragment.addHistoryRecord(entry);
         }
 
         private void error (String errorMsg) {

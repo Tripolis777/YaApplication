@@ -2,8 +2,6 @@ package com.example.vkaryagin.yaapplication.Core;
 
 import android.util.Log;
 
-import com.example.vkaryagin.yaapplication.Database.Schema.HistoryTranslateEntry;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

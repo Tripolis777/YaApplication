@@ -1,7 +1,6 @@
 package com.example.vkaryagin.yaapplication.Database.Schema;
 
 import android.content.ContentValues;
-import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
