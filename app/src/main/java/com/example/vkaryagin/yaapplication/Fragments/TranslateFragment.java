@@ -24,6 +24,7 @@ import com.example.vkaryagin.yaapplication.Callable;
 import com.example.vkaryagin.yaapplication.Core.DetectLanguage;
 import com.example.vkaryagin.yaapplication.Core.Languages;
 import com.example.vkaryagin.yaapplication.Core.Translate;
+import com.example.vkaryagin.yaapplication.Core.YaResponseCodes;
 import com.example.vkaryagin.yaapplication.Core.YaTranslateManager;
 import com.example.vkaryagin.yaapplication.Database.HistoryTranslate;
 import com.example.vkaryagin.yaapplication.Database.Schema.HistoryTranslateEntry;
@@ -36,10 +37,6 @@ import com.example.vkaryagin.yaapplication.Views.TranslateListAdapter;
  * Created by tripo on 3/19/2017.
  */
 
-//TODO: Cache
-//TODO: Refactoring
-//TODO: перенести все ошибки в константы  и сделать обработчик по response code
-
 public class TranslateFragment extends BaseFragment {
 
     /**
@@ -47,10 +44,6 @@ public class TranslateFragment extends BaseFragment {
      * fragment.
      */
     public static final String TAG = "favorite_fragment";
-
-    private static final String ARG_TRANSLATE_TEXT = "translate_text";
-    private static final String ARG_TRANSLATE_LANG = "translate_lang";
-    private static final String ARG_TRANSLATED_LANG = "translated_lang";
     private static final String ARG_TRANSLATED_TEXT = "translated_text";
 
     private EditText translateText;
@@ -165,8 +158,9 @@ public class TranslateFragment extends BaseFragment {
 
             @Override
             public void error(final Response res) {
-                Log.e("TranslateFragment", "[LANGUAGES] Cants get languages. Res: " + res.toString());
-                Toast.makeText(context, "Cant get languages.", Toast.LENGTH_SHORT).show();
+                Log.e("TranslateFragment", res.toString(context));
+                ApplicationUtils.throwAlertDialog(context,
+                        YaResponseCodes.getTitle(context), res.getMessage(context));
             }
         });
 
@@ -184,17 +178,6 @@ public class TranslateFragment extends BaseFragment {
         if (!languagesAdapter.isEmpty()) languagesAdapter.clear();
         languagesAdapter.addAll(langs.getLanguages());
         languagesAdapter.notifyDataSetChanged();
-
-        // Restore data if exists
-        Bundle args = getArguments();
-        if (args != null) {
-            String translateLang = args.getString(ARG_TRANSLATE_LANG);
-            if (translateLang != null && !translateLang.isEmpty())
-                fromLanguageSpinner.setSelection(langs.getLanguageNumber(translateLang));
-            String translatedLang = args.getString(ARG_TRANSLATED_LANG);
-            if (translatedLang != null && !translatedLang.isEmpty())
-                toLanguageSpinner.setSelection(langs.getLanguageNumber(translatedLang));
-        }
     }
 
     /**
@@ -216,9 +199,6 @@ public class TranslateFragment extends BaseFragment {
     }
 
     private class OnChangeTranslateText implements TextWatcher {
-
-        public OnChangeTranslateText() {}
-
         @Override
         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 
@@ -245,9 +225,9 @@ public class TranslateFragment extends BaseFragment {
 
                     @Override
                     public void error(final Response res) {
-                        Log.e("TranslateFragment", "[DETECT] Cant connect to detect language. " + res.toString());
-                        Toast.makeText(context, "Cant connect to detect language.", Toast.LENGTH_SHORT).show();
-
+                        Log.e("TranslateFragment", "[DetectLanguage] " + res.toString());
+                        ApplicationUtils.throwAlertDialog(context,
+                                YaResponseCodes.getTitle(context), res.getMessage(context));
                     }
                     });
             }
@@ -288,8 +268,6 @@ public class TranslateFragment extends BaseFragment {
                     new Callable<Translate>() {
                         @Override
                         public void done(Translate value) {
-                            if (value.checkResponseCode()) return;
-
                             HistoryTranslate hs = new HistoryTranslate(getDbOpenHelper());
                             HistoryTranslateEntry rec = hs.create(value, false);
 
@@ -303,8 +281,10 @@ public class TranslateFragment extends BaseFragment {
 
                         @Override
                         public void error(final Response res) {
-                            Log.e("TranslateFragment",  "[TRANSLATE] Cant translate text. " + res.toString());
-                            Toast.makeText(context, "Cant translate text.", Toast.LENGTH_SHORT).show();
+                            String responseDescription =  res.getMessage(context);
+                            Log.e("TranslateFragment", "[Translate] " + responseDescription);
+                            ApplicationUtils.throwAlertDialog(context,
+                                        YaResponseCodes.getTitle(context), responseDescription);
                         }
                     }
             );

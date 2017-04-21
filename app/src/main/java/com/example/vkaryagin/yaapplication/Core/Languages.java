@@ -18,15 +18,24 @@ public class Languages implements Initiable {
 
     private List<Language> langs;
     private HashMap<String, Integer> langNumbers;
+    private YaResponseCodes.YaResponse response;
 
     public Languages() {
         langs = new ArrayList<>();
         langNumbers = new HashMap<>();
+        response = new YaResponseCodes.YaResponse(YaResponseCodes.SUCCESS);
     }
 
     public void init (String jsonString) {
         try {
             JSONObject res = new JSONObject(jsonString);
+
+            if (!res.isNull("code")) {
+                int responseCode = res.getInt("code");
+                response = new YaResponseCodes.YaResponse(responseCode);
+                if (!YaResponseCodes.isSuccess(responseCode)) return;
+            }
+
             JSONObject langs = res.getJSONObject("langs");
 
             for (Iterator<String> it = langs.keys(); it.hasNext(); ) {
@@ -55,6 +64,9 @@ public class Languages implements Initiable {
     public List<Language> getLanguages() { return langs; }
 
     public boolean isEmpty() { return langs.isEmpty(); }
+
+    @Override
+    public YaResponseCodes.YaResponse getResponse() { return response; }
 
     public class Language {
 

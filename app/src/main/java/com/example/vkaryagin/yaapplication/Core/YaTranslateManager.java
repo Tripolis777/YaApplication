@@ -14,9 +14,6 @@ import com.example.vkaryagin.yaapplication.R;
  * Created by tripo on 3/27/2017.
  */
 
-//TODO: Подумать о необходимости этого класса и почему он singleton
-//TODO: обязательные и опциональные переменные запроса нужно как-то вынести если это возможно
-
 public class YaTranslateManager {
 
     private static YaTranslateManager instance;

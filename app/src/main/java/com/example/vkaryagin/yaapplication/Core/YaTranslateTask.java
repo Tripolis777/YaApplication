@@ -1,9 +1,11 @@
 package com.example.vkaryagin.yaapplication.Core;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.vkaryagin.yaapplication.Callable;
+import com.example.vkaryagin.yaapplication.Response;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -77,7 +79,6 @@ public class YaTranslateTask<T extends Initiable> extends AsyncTask<String, Inte
 
     @Override
     protected void onPostExecute(ResponseObject<T> result) {
-
         if (result.isDone())
             mCallback.done(result.getObject());
         else
@@ -92,12 +93,21 @@ public class YaTranslateTask<T extends Initiable> extends AsyncTask<String, Inte
         }
 
         @Override
+        public String getMessage(final Context context) {
+            return message;
+        }
+
+        @Override
+        public int getCode() { return code; }
+
+        @Override
         public String toString() {
             return String.format("Code: %d, Message: %s", code, message);
         }
+        public String toString(Context context) { return toString(); }
     }
 
-    protected static class ResponseObject<T> {
+    protected static class ResponseObject<T extends Initiable> {
         private T object;
         private Response res;
 
@@ -110,8 +120,17 @@ public class YaTranslateTask<T extends Initiable> extends AsyncTask<String, Inte
             this.res = new Response(responseCode, responseMessage);
         }
 
-        public boolean isDone() { return res.code == HttpURLConnection.HTTP_OK; }
+        public boolean isDone() {
+            return object != null &&
+                    res.getCode() == HttpURLConnection.HTTP_OK &&
+                    YaResponseCodes.isSuccess(object.getResponse());
+        }
+
         public T getObject() { return this.object; }
-        public Response getResponse() { return this.res; }
+        public com.example.vkaryagin.yaapplication.Response getResponse() {
+            if (object == null)
+                return res;
+            return object.getResponse();
+        }
     }
 }

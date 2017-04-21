@@ -9,11 +9,14 @@ import android.content.Context;
 
 public final class ApplicationUtils {
 
-    public static void throwAlertDialog(Context context, int title, int message) {
+    public static void throwAlertDialog(final Context context, int title, int message) {
+        throwAlertDialog(context, context.getString(title), context.getString(message));
+    }
+
+    public static void throwAlertDialog(final Context context, String title, String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setMessage(message).setTitle(title);
         AlertDialog dialog = builder.create();
         dialog.show();
     }
-
 }

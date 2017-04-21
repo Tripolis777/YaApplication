@@ -12,6 +12,7 @@
     <!--&amp;format=%4$s&amp;options=%5$s-->
 
     <string name="ya_credits"><a href="http://translate.yandex.ru">Переведено сервисом «Яндекс.Переводчик»</a></string>
+    <string name="ya_response_code_title">Нами были получены важные сведения:</string>
 
     <!--Response code descriptions-->
     <string name="ya_response_code_200">Операция выполнена успешно</string>

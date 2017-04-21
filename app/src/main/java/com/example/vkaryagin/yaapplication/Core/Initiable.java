@@ -7,4 +7,9 @@ package com.example.vkaryagin.yaapplication.Core;
 public interface Initiable {
 
     void init(String jsonObject);
+    /**
+     * This method allows get response code for further check it
+     * @return Object's response code
+     */
+    YaResponseCodes.YaResponse getResponse();
 }

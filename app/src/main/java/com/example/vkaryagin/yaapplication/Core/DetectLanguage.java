@@ -12,11 +12,10 @@ import org.json.JSONObject;
 public class DetectLanguage implements Initiable {
 
     private String langCode;
-    private int code;
+    private YaResponseCodes.YaResponse response;
 
     public DetectLanguage() {
         this.langCode = new String();
-        this.code = -1;
     }
 
     public void init(String jsonString) {
@@ -30,9 +29,9 @@ public class DetectLanguage implements Initiable {
 
         try {
             JSONObject res = new JSONObject(jsonString);
-            this.code = res.getInt("code");
-
-            if (code != 200) return;
+            int responseCode = res.getInt("code");
+            response = new YaResponseCodes.YaResponse(responseCode);
+            if (!YaResponseCodes.isSuccess(responseCode)) return;
 
             this.langCode = res.getString("lang");
 
@@ -43,4 +42,7 @@ public class DetectLanguage implements Initiable {
     }
 
     public String getLang() { return this.langCode; }
+
+    @Override
+    public YaResponseCodes.YaResponse getResponse() { return response; }
 }

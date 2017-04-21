@@ -17,15 +17,14 @@ import java.util.List;
 public class Translate implements Initiable, Serializable {
 
     private List<String> translatedTexts;
-    private int responseCode;
     private String language;
     private final Params requestParams;
     private String translatedJSONString;
+    private YaResponseCodes.YaResponse response;
 
     public Translate(Params requestParams) {
         this.requestParams = requestParams;
         translatedTexts = new ArrayList<>();
-        responseCode = -1;
     }
 
     /** Request Example
@@ -38,13 +37,13 @@ public class Translate implements Initiable, Serializable {
     public void init(String jsonString) {
         try {
             JSONObject res = new JSONObject(jsonString);
-            responseCode = res.getInt("code");
-
-            if (responseCode != 200) return; // TODO: нужно обработать ситуацию + добавить коды + константы
+            int responseCode = res.getInt("code");
+            response = new YaResponseCodes.YaResponse(responseCode);
+            if (!YaResponseCodes.isSuccess(response)) return;
 
             JSONArray translateVariants = res.getJSONArray("text");
             translatedJSONString = translateVariants.toString();
-            for(int i = 0; i < translateVariants.length(); i++)
+            for (int i = 0; i < translateVariants.length(); i++)
                 translatedTexts.add(translateVariants.getString(i));
 
             language = res.getString("lang");
@@ -63,9 +62,8 @@ public class Translate implements Initiable, Serializable {
 
     public boolean isEmpty() { return translatedTexts.isEmpty(); }
 
-    public boolean checkResponseCode() {   // TODO: future checkResponseCode(Context context) for alert messages
-        return responseCode != 200;
-    }
+    @Override
+    public YaResponseCodes.YaResponse getResponse() { return response; }
 
     public static class Params {
         private String text;
