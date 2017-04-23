@@ -5,9 +5,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
 
 /**
- * Created by v.karyagin on 14.04.2017.
+ * Класс реализующий ассинхронное обновленние данных записи в базе данных
  */
-
 public class DatabaseUpdateTask extends AsyncTask<UpdateRequest, Integer, Integer> {
     private final SQLiteOpenHelper dbHelper;
 

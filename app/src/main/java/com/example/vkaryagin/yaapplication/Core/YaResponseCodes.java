@@ -1,17 +1,13 @@
 package com.example.vkaryagin.yaapplication.Core;
 
 import android.content.Context;
-import android.support.annotation.IntegerRes;
 
 import com.example.vkaryagin.yaapplication.R;
 import com.example.vkaryagin.yaapplication.Response;
 
-import static android.R.attr.value;
-
 /**
- * Created by v.karyagin on 29.03.2017.
+ * This class contains all available Yandex Translate API's response codes
  */
-
 public class YaResponseCodes {
     /**
      * Code variants list
@@ -32,18 +28,40 @@ public class YaResponseCodes {
     public static final int CANT_TRANSLATE = 422;
     public static final int INCORRECT_TRANSLATE_LANGUAGE = 501;
 
+    /**
+     * Checks response code for {@link YaResponse} object for {@link #SUCCESS}
+     * @param object response object for Yandex Translate API
+     * @return true if response code equal {@link #SUCCESS} else false
+     */
     public static boolean isSuccess(YaResponse object) {
         return isSuccess(object.getCode());
     }
 
+    /**
+     * Checks Yandex Translation API's response code for {@link #SUCCESS}
+     * @param responseCode Yandex Translate API response code
+     * @return true if response code equal {@link #SUCCESS} else false
+     */
     public static boolean isSuccess(int responseCode) {
         return responseCode == SUCCESS;
     }
 
+    /**
+     * Like {@link #getResponseDescription(int, Context)}, but take response code from {@link YaResponse} object.
+     * @param object response object for Yandex Translation API
+     * @param context {@link Context}
+     * @return description for response code.
+     */
     public static String getResponseDescription(YaResponse object, final Context context) {
         return getResponseDescription(object.getCode(), context);
     }
 
+    /**
+     * Allow get response code description
+     * @param responseCode Yandex Translation API's response code
+     * @param context {@link Context}
+     * @return description for response code
+     */
     public static String getResponseDescription(int responseCode, final Context context) {
         String stringName = String.format("ya_response_code_%d", responseCode);
         int stringId = context.getResources().getIdentifier(stringName, "string", context.getPackageName());
@@ -52,6 +70,11 @@ public class YaResponseCodes {
         return context.getString(stringId);
     }
 
+    /**
+     * Allows get title that unities all response codes.
+     * @param context
+     * @return string of title
+     */
     public static String getTitle(final Context context) { return context.getString(R.string.ya_response_code_title); }
 
     public static class YaResponse extends Response{

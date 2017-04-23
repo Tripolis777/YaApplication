@@ -16,9 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by tripo on 4/3/2017.
+ * Класс работы с таблицей history
  */
-
 public class HistoryTranslate {
 
     public static final String SQL_CREATE_ENTRIES =
@@ -53,6 +52,10 @@ public class HistoryTranslate {
         this.dbOpenHelper = dbOpenHelper;
     }
 
+    /**
+     * Позволяет получить все записи из таблицы и сортирует их по дате добавления от ранних к поздним
+     * @return список записей
+     */
     public List<HistoryTranslateEntry> getAll() {
         Cursor cursor = this.query(QUERY_COLUMNS, null, null, null, null,
                 HistoryTranslateEntry.COLUMN_NAME_TRANSLATE_DATE + " DESC");
@@ -62,6 +65,10 @@ public class HistoryTranslate {
         return records;
     }
 
+    /**
+     * Позволяет получить все записи из таблицы, у которых поле favorite is true
+     * @return список записей
+     */
     public List<HistoryTranslateEntry> getFavorites() {
         Cursor cursor = this.query(
                 QUERY_COLUMNS,
@@ -102,6 +109,10 @@ public class HistoryTranslate {
         return records;
     }
 
+    /**
+     * Like {@link SQLiteDatabase#query(String, String[], String, String[], String, String, String)}
+     * @see {@link SQLiteDatabase#query(String, String[], String, String[], String, String, String)}
+     */
     public Cursor query(String[] columns, String selection, String[] selectionArgs, String groupBy,
                         String having, String orderBy ) {
         SQLiteDatabase db = dbOpenHelper.getReadableDatabase();

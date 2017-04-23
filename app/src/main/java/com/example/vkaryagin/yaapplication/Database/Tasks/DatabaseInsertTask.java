@@ -7,9 +7,8 @@ import android.os.AsyncTask;
 import com.example.vkaryagin.yaapplication.Database.Schema.Record;
 
 /**
- * Created by tripo on 4/3/2017.
+ * Класс реализующий ассинхронное добавление записи в базу данных
  */
-
 public class DatabaseInsertTask extends AsyncTask<Record, Integer, Boolean> {
 
     private SQLiteDatabase sqLiteDatabase;

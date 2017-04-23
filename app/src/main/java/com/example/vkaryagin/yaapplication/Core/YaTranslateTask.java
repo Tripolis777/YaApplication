@@ -19,14 +19,23 @@ import java.net.URL;
 import javax.net.ssl.HttpsURLConnection;
 
 /**
- * Created by v.karyagin on 29.03.2017.
+ * Generic класс для вызова методов Yandex Translate API.
  */
-
 public class YaTranslateTask<T extends Initiable> extends AsyncTask<String, Integer, YaTranslateTask.ResponseObject<T>> {
 
     private final Callable<T> mCallback;
     private final T mObject;
 
+    /**
+     * Конструктор принимает объект, который будет инициализирован {@link Initiable} из полученного
+     * ответа от сервера Yandex Translate и в случае успеха вызывает {@link Callable#done(Object)}. Если
+     * произошла ошибка на уровне запроса, или Yandex Translate сервис ответил кодом, не равным
+     * {@link YaResponseCodes#SUCCESS} , будет вызван {@link Callable#error(com.example.vkaryagin.yaapplication.Response)}
+     * @param object объект интерфейса {@link Initiable}, у которого будет выхзвана {@link Initiable#init(String)}
+     *               с JSON строкой ответа сервера
+     * @param callback объект интерфейса {@link Callable}, {@link Callable#done(Object)} или {@link Callable#error(com.example.vkaryagin.yaapplication.Response)}
+     *                 будут вызваны после инициализации объекта
+     */
     public YaTranslateTask(final T object, final Callable<T> callback) {
         super();
         this.mObject = object;
@@ -85,6 +94,9 @@ public class YaTranslateTask<T extends Initiable> extends AsyncTask<String, Inte
             mCallback.error(result.getResponse());
     }
 
+    /**
+     * Класс, отвечающий за обработку ответа от сервера на уровне HTTP.
+     */
     public static class Response extends com.example.vkaryagin.yaapplication.Response {
 
         public Response(int responseCode, String responseMessage) {
@@ -107,26 +119,58 @@ public class YaTranslateTask<T extends Initiable> extends AsyncTask<String, Inte
         public String toString(Context context) { return toString(); }
     }
 
+    /**
+     * Класс оболочка, позволяющий передать инициализированный объект с его response объектом.
+     * Позволяет проверить, прошла ли инициализация удачна.
+     * @param <T>
+     */
     protected static class ResponseObject<T extends Initiable> {
         private T object;
         private Response res;
 
+        /**
+         * Конструктор, когда объект удалось инициализировать
+         * @param object объект
+         */
         public ResponseObject(final T object) {
             this.object = object;
             this.res = new Response(HttpURLConnection.HTTP_OK, "OK");
         }
 
+        /**
+         * Конструктор, когда не удалось инициализировать объект.
+         * @param responseCode код ответа
+         * @param responseMessage сообщение
+         */
         public ResponseObject(int responseCode, String responseMessage) {
             this.res = new Response(responseCode, responseMessage);
         }
 
+        /**
+         * Проверяет, прошла ли инийиализация объекта. Если HTTP запрос имеет code не равный
+         * {@link HttpURLConnection#HTTP_OK} или объект пытались инициализировать с кодом отличным от
+         * {@link YaResponseCodes#SUCCESS} выдаст false.
+         * @return Если объект инициализирован, вернёт "true", иначе "false"
+         */
         public boolean isDone() {
             return object != null &&
                     res.getCode() == HttpURLConnection.HTTP_OK &&
                     YaResponseCodes.isSuccess(object.getResponse());
         }
 
+
+        /**
+         * Позволяет получить инициализированный объект. Чтобы проверить, что объект был инициализирован
+         * вызовите {@link #isDone()}
+         * @return инициальзированный объект
+         */
         public T getObject() { return this.object; }
+
+        /**
+         * Позволяет получить объект response. Если объект не дошёл до стадии инициализации, вернет {@link Response},
+         * иначе вернёт {@link com.example.vkaryagin.yaapplication.Core.YaResponseCodes.YaResponse}
+         * @return возвращает объект {@link com.example.vkaryagin.yaapplication.Response}
+         */
         public com.example.vkaryagin.yaapplication.Response getResponse() {
             if (object == null)
                 return res;

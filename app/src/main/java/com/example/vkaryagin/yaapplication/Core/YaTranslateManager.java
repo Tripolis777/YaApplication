@@ -9,27 +9,39 @@ import android.widget.Toast;
 import com.example.vkaryagin.yaapplication.ApplicationUtils;
 import com.example.vkaryagin.yaapplication.Callable;
 import com.example.vkaryagin.yaapplication.R;
+import com.example.vkaryagin.yaapplication.Response;
 
 /**
- * Created by tripo on 3/27/2017.
+ * Этот singleton класс предоставляет интерфейс работы с Yandex Translation API. В случае отсутствия интернет
+ * соединения будет показан {@link android.support.v7.app.AlertDialog}. Работа с результатом запроса
+ * производится с помощью вызова callback функции через {@link Callable} интерфейс.
  */
-
 public class YaTranslateManager {
 
     private static YaTranslateManager instance;
     private final Languages languages;
-   // private HashMap<String, Translate> lastRequests;   // Future cache last 10 request maybe
 
     private YaTranslateManager() {
         languages = new Languages();
     }
 
+    /**
+     * Метод для получение объекта класса
+     * @return объект класса {@link YaTranslateManager}
+     */
     public static YaTranslateManager getInstance() {
         if (instance == null)
             instance = new YaTranslateManager();
         return instance;
     }
 
+    /**
+     * Асинхронный вызов метода getLangs в Yandex Translation API, который получет доступные языки.
+     * В случае отсутствия интернет соединения будет показан {@link android.support.v7.app.AlertDialog}.
+     * @param context context
+     * @param callback объект интерфейса {@link Callable}. В случае успеха будет вызвана функция
+     *                 {@link Callable#done(Object)}, иначе {@link Callable#error(Response)}
+     */
     public void executeLanguages(final Context context, final Callable<Languages> callback) {
         if (!languages.isEmpty()) {
             callback.done(languages);
@@ -46,9 +58,17 @@ public class YaTranslateManager {
         getLanguagesTask.execute(YandexHttpApi.getLanguagesLink(context));
     }
 
+    /**
+     * Ассинхронный вызов метода translate в Yandex Translation API, вызываемый с полученными параметрами.
+     * В случае отсутствия интернет соединения будет показан {@link android.support.v7.app.AlertDialog}.
+     *
+     * @param params параметры запроса
+     * @param context context
+     * @param callback объект интерфейса {@link Callable}. В случае успеха будет вызвана функция
+     *                 {@link Callable#done(Object)}, иначе {@link Callable#error(Response)}
+     */
     public void executeTranslate(Translate.Params params, final Context context,
                                  final Callable<Translate> callback) {
-        //Some cache code
         if (!this.checkNetwork(context)) {
             ApplicationUtils.throwAlertDialog(context, R.string.network_not_connection_title,
                     R.string.network_not_connection_message);
@@ -59,6 +79,14 @@ public class YaTranslateManager {
         getTranslateTask.execute(YandexHttpApi.getTranslateLink(context, params));
     }
 
+    /**
+     * Ассинхронный вызов метода detect в Yandex Translate API, который определяет язык текста.
+     * В случае отсутствия интернет соединения будет показан {@link android.support.v7.app.AlertDialog}.
+     * @param text переводимый текст
+     * @param context context
+     * @param callback объект интерфейса {@link Callable}. В случае успеха будет вызвана функция
+     *                 {@link Callable#done(Object)}, иначе {@link Callable#error(Response)}
+     */
     public void executeDetect(String text, final Context context,
                               final Callable<DetectLanguage> callback) {
 
@@ -72,6 +100,11 @@ public class YaTranslateManager {
         getDetectLanguageTask.execute(YandexHttpApi.getDetectLink(context, text));
     }
 
+    /**
+     * Возвращает объект {@link Languages}, который содержит в себе доступные языки. Если {@link #executeLanguages(Context, Callable)}
+     * не был вызван, список языков будет пуст.
+     * @return {@link Languages} объект для работы с языками
+     */
     public Languages getLanguages() { return this.languages; }
 
     private boolean checkNetwork(Context context) {

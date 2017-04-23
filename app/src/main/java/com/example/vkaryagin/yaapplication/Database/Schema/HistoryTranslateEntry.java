@@ -14,9 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by v.karyagin on 14.04.2017.
+ * Класс оболочка для таблицы записи таблицы history. Содержит в себе имена всех полей и позволяет
+ * инициализировать объект таблицы из объектf {@link Translate}
  */
-
 public class HistoryTranslateEntry implements Record {
     public static final String TABLE_NAME = "history";
 
@@ -41,16 +41,29 @@ public class HistoryTranslateEntry implements Record {
 
     private List<String> translatedTexts;
 
+    /**
+     * Позволяет установить язык перевода для объекта таблицы history
+     * @param language язык перевода
+     */
     public void setTranslatedLanguage(@NonNull Languages.Language language) {
         this.translatedLang = language.getLanguageName();
         this.translatedCode = language.getLanguageCode();
     }
 
+
+    /**
+     * Позволяет установить язык переводимого текста
+     * @param language язык переводимого текста
+     */
     public void setTranslateLanguage(@NonNull Languages.Language language) {
         this.translateLang = language.getLanguageName();
         this.translateCode = language.getLanguageCode();
     }
 
+    /**
+     * Позволяет преобразовать объект {@link Translate} в объект записы таблицы history
+     * @param translate инициализированный объект запроса translate в Yandex Translation API
+     */
     public void setTranslate(@NonNull Translate translate) {
         this.translateText = translate.getTranslateText();
         this.translatedText = translate.getTranslatedJSONString();
@@ -59,6 +72,11 @@ public class HistoryTranslateEntry implements Record {
         setTranslatedLanguage(translate.getTranslatedLanguage());
     }
 
+    /**
+     * Позволяет получить список переводов установленного текста. Преобразует JSON Array строку, которая
+     * хранится в записи history в {@link List}
+     * @return список переводов текста
+     */
     public List<String> getTranslatedTexts() {
         Log.i("HistoryTranslateEntry", "[getTranslatedTexts] text: " + translatedText);
 
@@ -85,6 +103,10 @@ public class HistoryTranslateEntry implements Record {
         return this.translatedTexts;
     }
 
+    /**
+     * Позволяет получить первый по списку перевод из списка возможных
+     * @return строка перевода
+     */
     public String getTranslateFirst() {
         Log.i("HistortTranslateEntry", "getTranslateFirst");
         if (!this.getTranslatedTexts().isEmpty())

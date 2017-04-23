@@ -4,10 +4,6 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-/**
- * Created by tripo on 4/3/2017.
- */
-
 public class YaAppDBOpenHelper extends SQLiteOpenHelper {
 
     public static final int DATABASE_VERSION = 1;

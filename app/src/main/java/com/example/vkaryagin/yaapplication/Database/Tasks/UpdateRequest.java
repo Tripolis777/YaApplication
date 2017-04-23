@@ -3,9 +3,8 @@ package com.example.vkaryagin.yaapplication.Database.Tasks;
 import android.content.ContentValues;
 
 /**
- * Created by v.karyagin on 14.04.2017.
+ * Класс, позволяющий настроить запрос на обновление в базу данных
  */
-
 public class UpdateRequest {
     public String selection;
     public String[] selectionArgs;

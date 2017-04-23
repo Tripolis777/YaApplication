@@ -1,15 +1,23 @@
 package com.example.vkaryagin.yaapplication.Core;
 
 /**
- * Created by v.karyagin on 29.03.2017.
+ * You need call {@link #init(String)} method with json object string that initialize object.
  */
-
 public interface Initiable {
 
-    void init(String jsonObject);
     /**
-     * This method allows get response code for further check it
-     * @return Object's response code
+     * Allow initialize object fields from JSON
+     *
+     * @param jsonObject JSON string as JSON Object
+     */
+    void init(String jsonObject);
+
+    /**
+     * This method allows get response object for further check response code and
+     * give code description if it's need.
+     *
+     * @return {@link com.example.vkaryagin.yaapplication.Core.YaResponseCodes.YaResponse} object.
+     * If response object doesn't exists it return null.
      */
     YaResponseCodes.YaResponse getResponse();
 }
