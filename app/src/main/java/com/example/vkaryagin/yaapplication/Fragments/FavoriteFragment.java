@@ -16,19 +16,15 @@ import com.example.vkaryagin.yaapplication.Views.HistoryListAdapter;
 import java.util.ArrayList;
 
 /**
- * Created by tripo on 3/19/2017.
+ * Фрагмент для избранных записей истории переводов.
  */
-
 public class FavoriteFragment extends HistoryFragment {
-
-    public static final String TAG = "favotite_fragment";
 
     private ListView favoriteListView;
     private FavoriteListAdapter favoriteAdapter;
 
     /**
-     * Returns a new instance of this fragment for the given section
-     * number.
+     * Returns a new instance of this fragment.
      */
     public static FavoriteFragment newInstance(Bundle state, YaAppDBOpenHelper dbOpenHelper) {
         FavoriteFragment fragment = new FavoriteFragment();
@@ -57,7 +53,6 @@ public class FavoriteFragment extends HistoryFragment {
     @Override
     public void setUserVisibleHint(boolean isVisibleHint) {
         super.setUserVisibleHint(isVisibleHint);
-        Log.e("FavoriteFragment", "[setUserVisibleHint] set is to " + isVisibleHint);
         if (isVisibleHint) {
             favoriteAdapter.clear();
             HistoryTranslate favoriteTranslate = new HistoryTranslate(getDbOpenHelper());

@@ -4,9 +4,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 
 /**
- * Created by tripo on 4/20/2017.
+ * Всякие функции, вызывать которые хочется везде, а копипастить не хочется.
  */
-
 public final class ApplicationUtils {
 
     public static void throwAlertDialog(final Context context, int title, int message) {

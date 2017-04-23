@@ -20,9 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by tripo on 4/17/2017.
+ * Предосталяет интерфейс для отображения и работы со списком {@link HistoryTranslateEntry}. Унаследован от {@link ArrayAdapter}.
+ * @see ArrayAdapter
  */
-
 public class HistoryListAdapter extends ArrayAdapter<HistoryTranslateEntry> {
     private final Context context;
     private final List<HistoryTranslateEntry> values;

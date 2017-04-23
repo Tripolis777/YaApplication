@@ -110,8 +110,9 @@ public class HistoryTranslate {
     }
 
     /**
-     * Like {@link SQLiteDatabase#query(String, String[], String, String[], String, String, String)}
-     * @see {@link SQLiteDatabase#query(String, String[], String, String[], String, String, String)}
+     * Как {@link SQLiteDatabase#query(String, String[], String, String[], String, String, String)}
+     * только сам передает имя таблицы
+     * @see SQLiteDatabase#query(String, String[], String, String[], String, String, String)
      */
     public Cursor query(String[] columns, String selection, String[] selectionArgs, String groupBy,
                         String having, String orderBy ) {
@@ -120,6 +121,12 @@ public class HistoryTranslate {
                 columns, selection, selectionArgs, groupBy, having, orderBy);
     }
 
+    /**
+     * Создает новую запись в базе данных.
+     * @param translate объект перевода из которого создается {@link HistoryTranslateEntry}
+     * @param favorite является ли запись избранной, опциональый параметр.
+     * @return объект записи таблицы history {@link HistoryTranslateEntry}
+     */
     public HistoryTranslateEntry create(Translate translate, @Nullable Boolean favorite) {
         HistoryTranslateEntry record = new HistoryTranslateEntry();
         record.setTranslate(translate);
@@ -131,12 +138,25 @@ public class HistoryTranslate {
         return record;
     }
 
+    /**
+     * Устанавливает записи таблицы history поле favorite. Делает запрос в базу данных на обновление
+     * @param record запись в таблице history
+     * @param favorite значение поля favorite
+     */
     public void setFavorite(HistoryTranslateEntry record, boolean favorite) {
         ContentValues values = new ContentValues();
         values.put(HistoryTranslateEntry.COLUMN_NAME_IS_FAVORITE, favorite);
         this.update(record, values);
     }
 
+    /**
+     * Делает запрос на обновление записи в таблице history.
+     * @param record запись в таблице history
+     * @param values поля, которые будут обновлены
+     * @see ContentValues
+     * @see SQLiteDatabase#update(String, ContentValues, String, String[])
+     *
+     */
     public void update(HistoryTranslateEntry record, ContentValues values)  {
         UpdateRequest request = new UpdateRequest(
                 HistoryTranslateEntry.TABLE_NAME,

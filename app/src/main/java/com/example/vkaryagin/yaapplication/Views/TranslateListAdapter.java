@@ -12,9 +12,9 @@ import com.example.vkaryagin.yaapplication.Database.Schema.HistoryTranslateEntry
 import com.example.vkaryagin.yaapplication.R;
 
 /**
- * Created by v.karyagin on 12.04.2017.
+ * List adapter to display takes variants of translated text. Working with {@link HistoryTranslateEntry}
+ * @see ArrayAdapter
  */
-
 public class TranslateListAdapter extends ArrayAdapter<HistoryTranslateEntry> {
 
     private final Context context;

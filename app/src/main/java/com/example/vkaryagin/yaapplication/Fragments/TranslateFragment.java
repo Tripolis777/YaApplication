@@ -34,16 +34,14 @@ import com.example.vkaryagin.yaapplication.Response;
 import com.example.vkaryagin.yaapplication.Views.TranslateListAdapter;
 
 /**
- * Created by tripo on 3/19/2017.
+ * General fragment that provides interface for translate text.
  */
-
 public class TranslateFragment extends BaseFragment {
 
     /**
      * The fragment argument representing the section number for this
      * fragment.
      */
-    public static final String TAG = "favorite_fragment";
     private static final String ARG_TRANSLATED_TEXT = "translated_text";
 
     private EditText translateText;
@@ -93,7 +91,6 @@ public class TranslateFragment extends BaseFragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_translate, container, false);
         context = this.getContext();
-        Log.e("TranslateFragment", "onCreateView");
         YaTranslateManager translateManager = YaTranslateManager.getInstance();
 
         languagesAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item);

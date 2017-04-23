@@ -9,9 +9,11 @@ import com.example.vkaryagin.yaapplication.Database.YaAppDBOpenHelper;
 
 import java.util.ArrayList;
 /**
- * Created by v.karyagin on 07.04.2017.
+ * ListView Adapter for favorite history records. It's like {@link HistoryListAdapter}, but override
+ * favorite button behavior.
+ * @see HistoryListAdapter
+ * @see android.widget.ArrayAdapter
  */
-
 public class FavoriteListAdapter extends HistoryListAdapter {
     public FavoriteListAdapter(@NonNull Context context, ArrayList<HistoryTranslateEntry> values, YaAppDBOpenHelper dbOpenHelper) {
         super(context, values, dbOpenHelper);

@@ -3,9 +3,8 @@ package com.example.vkaryagin.yaapplication.Fragments;
 import com.example.vkaryagin.yaapplication.Database.YaAppDBOpenHelper;
 
 /**
- * Created by v.karyagin on 11.04.2017.
+ * Основной абстрактный класс для фрагментов. Содержит в себе основной интерфейс работы с DBOpenHelper'ом
  */
-
 public abstract class BaseFragment extends android.support.v4.app.Fragment {
     private YaAppDBOpenHelper dbOpenHelper;
 

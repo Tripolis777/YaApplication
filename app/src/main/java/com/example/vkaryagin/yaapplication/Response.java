@@ -3,9 +3,8 @@ package com.example.vkaryagin.yaapplication;
 import android.content.Context;
 
 /**
- * Created by v.karyagin on 14.04.2017.
+ * Абстрактный класс для обработки ответов. Содердит код ответа и сообщение, если токовое имеется.
  */
-
 public abstract class Response {
     protected int code;
     protected String message;

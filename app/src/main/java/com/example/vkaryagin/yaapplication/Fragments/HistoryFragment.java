@@ -16,14 +16,10 @@ import com.example.vkaryagin.yaapplication.Views.HistoryListAdapter;
 import java.util.ArrayList;
 
 /**
- * Created by v.karyagin on 17.04.2017.
+ * Фрагмент для записей истории переводов.
  */
 
 public class HistoryFragment extends BaseFragment {
-
-    protected static final String COMMUNICATE_RECORD_KEY = "record";
-    public static final String TAG = "history_fragment";
-
     protected HistoryListAdapter historyAdapter;
 
     private ArrayList<HistoryTranslateEntry> historyRecords;
@@ -55,7 +51,6 @@ public class HistoryFragment extends BaseFragment {
     @Override
     public void setUserVisibleHint(boolean isVisibleHint) {
         super.setUserVisibleHint(isVisibleHint);
-        Log.e("FavoriteFragment", "[setUserVisibleHint] set is to " + isVisibleHint);
         if (isVisibleHint && historyAdapter != null) {
             historyAdapter.clear();
             HistoryTranslate favoriteTranslate = new HistoryTranslate(getDbOpenHelper());
