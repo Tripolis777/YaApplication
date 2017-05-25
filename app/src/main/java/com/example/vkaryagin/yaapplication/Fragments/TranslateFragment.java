@@ -31,7 +31,7 @@ import com.example.vkaryagin.yaapplication.Database.Schema.HistoryTranslateEntry
 import com.example.vkaryagin.yaapplication.Database.YaAppDBOpenHelper;
 import com.example.vkaryagin.yaapplication.R;
 import com.example.vkaryagin.yaapplication.Response;
-import com.example.vkaryagin.yaapplication.Views.TranslateListAdapter;
+import com.example.vkaryagin.yaapplication.Adapters.TranslateListAdapter;
 
 /**
  * General fragment that provides interface for translate text.

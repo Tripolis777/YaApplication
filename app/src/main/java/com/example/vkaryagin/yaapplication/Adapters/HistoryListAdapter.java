@@ -1,4 +1,4 @@
-package com.example.vkaryagin.yaapplication.Views;
+package com.example.vkaryagin.yaapplication.Adapters;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -20,13 +20,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Предосталяет интерфейс для отображения и работы со списком {@link HistoryTranslateEntry}. Унаследован от {@link ArrayAdapter}.
+ * Provides an interface for displaying and working with the list {@link HistoryTranslateEntry}. Inherit by {@link ArrayAdapter}.
  * @see ArrayAdapter
  */
 public class HistoryListAdapter extends ArrayAdapter<HistoryTranslateEntry> {
     private final Context context;
     private final List<HistoryTranslateEntry> values;
     private final YaAppDBOpenHelper dbOpenHelper;
+
+    static class ViewHolder {
+        TextView translateText;
+        TextView translatedText;
+        TextView translateLang;
+        TextView translatedLang;
+
+        ToggleButton favoriteButton;
+    }
 
     public HistoryListAdapter(@NonNull Context context, ArrayList<HistoryTranslateEntry> values, YaAppDBOpenHelper dbOpenHelper) {
         super(context, R.layout.favorite_list_item, values);
@@ -37,26 +46,35 @@ public class HistoryListAdapter extends ArrayAdapter<HistoryTranslateEntry> {
 
     @Override
     public View getView(int pos, View convertView, ViewGroup parent){
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View itemView = inflater.inflate(R.layout.favorite_list_item, parent, false);
+        ViewHolder viewHolder;
 
-        TextView translateText = (TextView) itemView.findViewById(R.id.translateText);
-        TextView translatedText = (TextView) itemView.findViewById(R.id.translatedText);
-        TextView translateLang = (TextView) itemView.findViewById(R.id.translateLang);
-        TextView translatedLang = (TextView) itemView.findViewById(R.id.translatedLang);
+        if (convertView == null) {
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = inflater.inflate(R.layout.favorite_list_item, parent, false);
 
-        ToggleButton favoriteButton = (ToggleButton) itemView.findViewById(R.id.favoriteItemButton);
+            viewHolder = new ViewHolder();
+
+            viewHolder.translateText = (TextView) convertView.findViewById(R.id.translateText);
+            viewHolder.translatedText = (TextView) convertView.findViewById(R.id.translatedText);
+            viewHolder.translateLang = (TextView) convertView.findViewById(R.id.translateLang);
+            viewHolder.translatedLang = (TextView) convertView.findViewById(R.id.translatedLang);
+            viewHolder.favoriteButton = (ToggleButton) convertView.findViewById(R.id.favoriteItemButton);
+
+            convertView.setTag(viewHolder);
+        } else {
+            viewHolder = (ViewHolder) convertView.getTag();
+        }
 
         HistoryTranslateEntry value = values.get(pos);
-        translateText.setText(value.translateText);
-        translatedText.setText(value.getTranslateFirst());
-        translateLang.setText(value.translateLang);
-        translatedLang.setText(value.translatedLang);
+        viewHolder.translateText.setText(value.translateText);
+        viewHolder.translatedText.setText(value.getTranslateFirst());
+        viewHolder.translateLang.setText(value.translateLang);
+        viewHolder.translatedLang.setText(value.translatedLang);
 
-        favoriteButton.setChecked(value.favorite);
-        favoriteButton.setOnClickListener(getOnFavoriteButtonClickListener(pos, value));
+        viewHolder.favoriteButton.setChecked(value.favorite);
+        viewHolder.favoriteButton.setOnClickListener(getOnFavoriteButtonClickListener(pos, value));
 
-        return itemView;
+        return convertView;
     }
 
     protected View.OnClickListener getOnFavoriteButtonClickListener(final int pos, final HistoryTranslateEntry entry) {
@@ -77,7 +95,6 @@ public class HistoryListAdapter extends ArrayAdapter<HistoryTranslateEntry> {
     public void removeRecord(int index) {
         values.remove(index);
     }
-
 
     protected void setRecordFavorite(HistoryTranslateEntry record, boolean isFavorite) {
         HistoryTranslate hs = new HistoryTranslate(dbOpenHelper);

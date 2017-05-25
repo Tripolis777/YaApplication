@@ -11,7 +11,7 @@ import com.example.vkaryagin.yaapplication.Database.HistoryTranslate;
 import com.example.vkaryagin.yaapplication.Database.Schema.HistoryTranslateEntry;
 import com.example.vkaryagin.yaapplication.Database.YaAppDBOpenHelper;
 import com.example.vkaryagin.yaapplication.R;
-import com.example.vkaryagin.yaapplication.Views.HistoryListAdapter;
+import com.example.vkaryagin.yaapplication.Adapters.HistoryListAdapter;
 
 import java.util.ArrayList;
 

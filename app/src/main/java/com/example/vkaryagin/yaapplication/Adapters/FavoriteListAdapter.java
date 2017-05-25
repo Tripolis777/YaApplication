@@ -1,4 +1,4 @@
-package com.example.vkaryagin.yaapplication.Views;
+package com.example.vkaryagin.yaapplication.Adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
