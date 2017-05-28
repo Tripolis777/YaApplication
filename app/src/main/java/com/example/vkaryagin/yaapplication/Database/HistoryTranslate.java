@@ -170,4 +170,7 @@ public class HistoryTranslate {
         updateTask.execute(request);
     }
 
+    public static void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
+
+    }
 }

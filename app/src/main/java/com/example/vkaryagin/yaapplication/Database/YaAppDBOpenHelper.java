@@ -20,7 +20,6 @@ public class YaAppDBOpenHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
-        sqLiteDatabase.execSQL(HistoryTranslate.SQL_DELETE_ENTRIES);
-        onCreate(sqLiteDatabase);
+        HistoryTranslate.onUpgrade(sqLiteDatabase, oldVersion, newVersion);
     }
 }
