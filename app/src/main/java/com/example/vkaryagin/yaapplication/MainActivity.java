@@ -24,7 +24,6 @@ import com.example.vkaryagin.yaapplication.Fragments.TranslateFragment;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
-
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -114,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
      * one of the sections/tabs/pages.
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
+        private static final int SECTIONS_COUNT = 3;
 
         private HashMap<Integer, Bundle> fragmentStates;
 
@@ -139,15 +139,15 @@ public class MainActivity extends AppCompatActivity {
                     return FavoriteFragment.newInstance(state, dbOpenHelper);
                 case 2:
                     return HistoryFragment.newInstance(state, dbOpenHelper);
+                default:
+                    return PlaceholderFragment.newInstance(position + 1);
             }
-
-            return PlaceholderFragment.newInstance(position + 1);
         }
 
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 3;
+            return SECTIONS_COUNT;
         }
     }
 }

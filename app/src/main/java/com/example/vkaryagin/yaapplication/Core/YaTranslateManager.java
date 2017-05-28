@@ -1,13 +1,14 @@
 package com.example.vkaryagin.yaapplication.Core;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
 
-import com.example.vkaryagin.yaapplication.ApplicationUtils;
 import com.example.vkaryagin.yaapplication.Callable;
+import com.example.vkaryagin.yaapplication.Fragments.AlertDialogFragment;
 import com.example.vkaryagin.yaapplication.R;
 import com.example.vkaryagin.yaapplication.Response;
 
@@ -20,6 +21,8 @@ public class YaTranslateManager {
 
     private static YaTranslateManager instance;
     private final Languages languages;
+
+    private static final String ALERT_DIALOG_TAG = "network_dialog";
 
     private YaTranslateManager() {
         languages = new Languages();
@@ -38,19 +41,20 @@ public class YaTranslateManager {
     /**
      * Асинхронный вызов метода getLangs в Yandex Translation API, который получет доступные языки.
      * В случае отсутствия интернет соединения будет показан {@link android.support.v7.app.AlertDialog}.
-     * @param context context
+     * @param activity working activity
      * @param callback объект интерфейса {@link Callable}. В случае успеха будет вызвана функция
      *                 {@link Callable#done(Object)}, иначе {@link Callable#error(Response)}
      */
-    public void executeLanguages(final Context context, final Callable<Languages> callback) {
+    public void executeLanguages(final Activity activity, final Callable<Languages> callback) {
         if (!languages.isEmpty()) {
             callback.done(languages);
             return;
         }
 
+        Context context = activity.getApplicationContext();
+
         if (!this.checkNetwork(context)) {
-            ApplicationUtils.throwAlertDialog(context, R.string.network_not_connection_title,
-                    R.string.network_not_connection_message);
+            throwAlertDialog(activity);
             return;
         }
 
@@ -63,15 +67,16 @@ public class YaTranslateManager {
      * В случае отсутствия интернет соединения будет показан {@link android.support.v7.app.AlertDialog}.
      *
      * @param params параметры запроса
-     * @param context context
+     * @param activity working activity
      * @param callback объект интерфейса {@link Callable}. В случае успеха будет вызвана функция
      *                 {@link Callable#done(Object)}, иначе {@link Callable#error(Response)}
      */
-    public void executeTranslate(Translate.Params params, final Context context,
+    public void executeTranslate(Translate.Params params, final Activity activity,
                                  final Callable<Translate> callback) {
+
+        Context context = activity.getApplicationContext();
         if (!this.checkNetwork(context)) {
-            ApplicationUtils.throwAlertDialog(context, R.string.network_not_connection_title,
-                    R.string.network_not_connection_message);
+           throwAlertDialog(activity);
             return;
         }
 
@@ -83,16 +88,16 @@ public class YaTranslateManager {
      * Ассинхронный вызов метода detect в Yandex Translate API, который определяет язык текста.
      * В случае отсутствия интернет соединения будет показан {@link android.support.v7.app.AlertDialog}.
      * @param text переводимый текст
-     * @param context context
+     * @param activity working activity
      * @param callback объект интерфейса {@link Callable}. В случае успеха будет вызвана функция
      *                 {@link Callable#done(Object)}, иначе {@link Callable#error(Response)}
      */
-    public void executeDetect(String text, final Context context,
+    public void executeDetect(String text, final Activity activity,
                               final Callable<DetectLanguage> callback) {
 
+        Context context = activity.getApplicationContext();
         if (!this.checkNetwork(context))  {
-            ApplicationUtils.throwAlertDialog(context, R.string.network_not_connection_title,
-                    R.string.network_not_connection_message);
+           throwAlertDialog(activity);
             return;
         }
 
@@ -101,7 +106,7 @@ public class YaTranslateManager {
     }
 
     /**
-     * Возвращает объект {@link Languages}, который содержит в себе доступные языки. Если {@link #executeLanguages(Context, Callable)}
+     * Возвращает объект {@link Languages}, который содержит в себе доступные языки. Если {@link #executeLanguages(Activity, Callable)}
      * не был вызван, список языков будет пуст.
      * @return {@link Languages} объект для работы с языками
      */
@@ -120,6 +125,14 @@ public class YaTranslateManager {
            Toast.makeText(context, "Not connected to network", Toast.LENGTH_SHORT);
 
         return connected;
+    }
+
+    private void throwAlertDialog(final Activity activity) {
+        Context context = activity.getApplicationContext();
+        if (activity.getFragmentManager().findFragmentByTag(ALERT_DIALOG_TAG) == null)
+            AlertDialogFragment.newInstance(context.getString(R.string.network_not_connection_title),
+                    context.getString(R.string.network_not_connection_message))
+                    .show(activity.getFragmentManager(), ALERT_DIALOG_TAG);
     }
 
     private static class YandexHttpApi {

@@ -1,5 +1,6 @@
 package com.example.vkaryagin.yaapplication.Fragments;
 
+import android.app.DialogFragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
@@ -19,7 +20,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import com.example.vkaryagin.yaapplication.ApplicationUtils;
 import com.example.vkaryagin.yaapplication.Callable;
 import com.example.vkaryagin.yaapplication.Core.DetectLanguage;
 import com.example.vkaryagin.yaapplication.Core.Languages;
@@ -43,6 +43,7 @@ public class TranslateFragment extends BaseFragment {
      * fragment.
      */
     private static final String ARG_TRANSLATED_TEXT = "translated_text";
+    private static final String ALERT_DIALOG_DEFAULT_TAG = "dialog";
 
     private EditText translateText;
     private ListView translateList;
@@ -143,7 +144,7 @@ public class TranslateFragment extends BaseFragment {
             public void onNothingSelected(AdapterView<?> adapterView) {}
         });
 
-        translateManager.executeLanguages(context, new Callable<Languages>() {
+        translateManager.executeLanguages(this.getActivity(), new Callable<Languages>() {
             @Override
             public void done(Languages value) {
                 TranslateFragment.this.initSpinnersAdapter(value);
@@ -156,8 +157,11 @@ public class TranslateFragment extends BaseFragment {
             @Override
             public void error(final Response res) {
                 Log.e("TranslateFragment", res.toString(context));
-                ApplicationUtils.throwAlertDialog(context,
-                        YaResponseCodes.getTitle(context), res.getMessage(context));
+                DialogFragment alertDialog = AlertDialogFragment.newInstance(
+                        YaResponseCodes.getTitle(context),
+                        res.getMessage(context));
+
+                alertDialog.show(getActivity().getFragmentManager(), ALERT_DIALOG_DEFAULT_TAG);
             }
         });
 
@@ -204,28 +208,36 @@ public class TranslateFragment extends BaseFragment {
 
             if (i1 == 0 && i != 0 && autoDetect) {
                 final YaTranslateManager yaTranslateManager = YaTranslateManager.getInstance();
-                yaTranslateManager.executeDetect(charSequence.toString(), context,
-                        new Callable<DetectLanguage>() {
-                    @Override
-                    public void done(DetectLanguage value) {
-                        TranslateFragment.this.setInputLanguage(
-                                yaTranslateManager.getLanguages().getLanguageNumber(
-                                        value.getLang()
-                                ));
-                        TranslateFragment.this.setOutputLanguage(
-                                yaTranslateManager.getLanguages().getLanguageNumber(
-                                        context.getResources().getConfiguration().locale.getLanguage()
-                                )
-                        );
-                        autoDetect = true;
-                    }
+                yaTranslateManager.executeDetect(
+                    charSequence.toString(),
+                    TranslateFragment.this.getActivity(),
+                    new Callable<DetectLanguage>() {
 
-                    @Override
-                    public void error(final Response res) {
-                        Log.e("TranslateFragment", "[DetectLanguage] " + res.toString());
-                        ApplicationUtils.throwAlertDialog(context,
-                                YaResponseCodes.getTitle(context), res.getMessage(context));
-                    }
+                        @Override
+                        public void done(DetectLanguage value) {
+                            TranslateFragment.this.setInputLanguage(
+                                    yaTranslateManager.getLanguages()
+                                    .getLanguageNumber(value.getLang())
+                            );
+
+                            TranslateFragment.this.setOutputLanguage(
+                                    yaTranslateManager.getLanguages()
+                                    .getLanguageNumber(
+                                        context.getResources()
+                                        .getConfiguration()
+                                        .locale.getLanguage()
+                                    )
+                            );
+                            autoDetect = true;
+                        }
+
+                        @Override
+                        public void error(final Response res) {
+                            Log.e("TranslateFragment", "[DetectLanguage] " + res.toString());
+                            AlertDialogFragment.newInstance(YaResponseCodes.getTitle(context),
+                                    res.getMessage(context))
+                                    .show(getActivity().getFragmentManager(), ALERT_DIALOG_DEFAULT_TAG);
+                        }
                     });
             }
         }
@@ -251,7 +263,10 @@ public class TranslateFragment extends BaseFragment {
             if (text.isEmpty()) { return; }
             if (toLanguageSpinner.getAdapter().isEmpty() ||
                     fromLanguageSpinner.getAdapter().isEmpty()) {
-                ApplicationUtils.throwAlertDialog(this.context, R.string.language_list_empty_title, R.string.language_list_empty_message);
+                AlertDialogFragment.newInstance(
+                        context.getString(R.string.language_list_empty_title),
+                        context.getString(R.string.language_list_empty_message))
+                .show(getActivity().getFragmentManager(), "dialog");
                 return;
             }
 
@@ -261,7 +276,7 @@ public class TranslateFragment extends BaseFragment {
             YaTranslateManager translateManager = YaTranslateManager.getInstance();
             translateManager.executeTranslate(
                     new Translate.Params(text, langIn, langOut),
-                    this.context,
+                    TranslateFragment.this.getActivity(),
                     new Callable<Translate>() {
                         @Override
                         public void done(Translate value) {
@@ -280,8 +295,10 @@ public class TranslateFragment extends BaseFragment {
                         public void error(final Response res) {
                             String responseDescription =  res.getMessage(context);
                             Log.e("TranslateFragment", "[Translate] " + responseDescription);
-                            ApplicationUtils.throwAlertDialog(context,
-                                        YaResponseCodes.getTitle(context), responseDescription);
+                            AlertDialogFragment.newInstance(
+                                    YaResponseCodes.getTitle(context),
+                                    responseDescription )
+                            .show(getActivity().getFragmentManager(), ALERT_DIALOG_DEFAULT_TAG);
                         }
                     }
             );
