@@ -29,7 +29,7 @@ public class HistoryTranslateEntry implements Record {
     public static final String COLUMN_NAME_TRANSLATE_DATE = "date";
     public static final String COLUMN_NAME_IS_FAVORITE = "favorite";
 
-    public Long id;
+    public long id;
     public String translateText;
     public String translatedText;
     public String translateLang;

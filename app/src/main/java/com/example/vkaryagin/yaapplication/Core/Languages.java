@@ -111,7 +111,7 @@ public class Languages implements Initiable {
      * This class allows contain language code and language name. For example, language code is "ru" and
      * language name is "Russian".
      */
-    public class Language {
+    public static class Language {
 
         private String languageCode;
         private String languageName;
